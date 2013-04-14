@@ -63,9 +63,11 @@ class GuiBackup:
         self.parent = parent
         self.msg = StringVar()
         self.lis = []
-        self.makewidgets()
-        self.parent.title(title)
         self.title = title
+        self.parent.title(title)
+        self.makewidgets()
+        self.parent.update_idletasks()
+        self.center_window()
         #Try to set icon.
         try:
             self.parent.iconbitmap('@images/wilber_painter.xbm')
@@ -75,6 +77,14 @@ class GuiBackup:
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
         
+    
+    def center_window(self):
+        width = self.parent.winfo_width()
+        height = self.parent.winfo_height()
+        sw = self.parent.winfo_screenwidth()
+        sh = self.parent.winfo_screenheight()
+        self.parent.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
+
     def makewidgets(self):
         frm = ttk.Frame(self.parent)
         frm.grid(row=0, column=0, sticky=ALL)
@@ -465,6 +475,8 @@ class GuiRestore(GuiBackup):
         self.minima = StringVar()
         self.sxolio = StringVar()
         self.makewidgets()
+        self.parent.update_idletasks()
+        self.center_window()
         
         
     def makewidgets(self):
