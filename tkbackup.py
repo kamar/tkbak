@@ -21,7 +21,6 @@
 #      Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #================================================================================== 
 
-
 import locale
 import gettext
 import zipfile
@@ -63,6 +62,7 @@ class GuiBackup:
         self.parent = parent
         self.msg = StringVar()
         self.lis = []
+        self.typefile = StringVar()
         self.title = title
         self.parent.title(title)
         self.makewidgets()
@@ -103,17 +103,17 @@ class GuiBackup:
 ##        sp3 = ttk.Separator(frm, orient='vertical')
 ##        sp3.grid(row=1, column=1, rowspan=2)
         
-        tex = ScrolledText(frm, width=80, height=20, bg='black', fg='green')
+        tex = ScrolledText(frm, width=70, height=20, bg='black', fg='green')
         tex.grid(row=1, column=2, rowspan=2, sticky=ALL)
         msg = _('Πρόγραμμα δημιουργίας εφεδρικών αντιγράφων')
-        tex.insert(END, msg.center(80, '*'))
+        tex.insert(END, msg.center(70, '*'))
         self.tex = tex
 
         lblfrm1 = ttk.LabelFrame(frm, text=_('Αρχεία'))
         lblfrm1.grid(row=1, column=0, columnspan=2, sticky=ALL)
         lblfrm1.columnconfigure(0, weight=1)
         
-        lboxfiles = Listbox(lblfrm1, width=50, height=10)
+        lboxfiles = Listbox(lblfrm1, width=40, height=10)
         lboxfiles.grid(sticky=N)
         self.lboxfiles = lboxfiles
         self.lboxfiles.bind('<Double-1>', self.OnDouble)#Να το παιδέψω.
@@ -124,13 +124,23 @@ class GuiBackup:
         lblfrm2.grid(row=2, column=0, columnspan=2, sticky=ALL)
         lblfrm2.columnconfigure(0, weight=1)
         
-        lboxdirs = Listbox(lblfrm2, width=50, height=10)
+        lboxdirs = Listbox(lblfrm2, width=40, height=10)
         lboxdirs.grid(sticky=N)
         self.lboxdirs = lboxdirs
         self.lboxdirs.bind('<Double-1>', self.OnDouble)
 #         btndel2 = ttk.Button(lblfrm2, text='Διαγραφή Επιλεγμένου', command=lambda: self.del_frm_list(None, self.lboxdirs))
 #         btndel2.grid(sticky=S)
         
+        lblfrmradio = ttk.LabelFrame(frm, text=_('Επιλογή Τύπου Αρχείου'))
+        lblfrmradio.grid(row=1, column=3, sticky=N)
+                
+        rdiozip = ttk.Radiobutton(lblfrmradio, text= _('Αρχείο Zip'), variable=self.typefile, value='typezip')
+        rdiozip.grid(row=0, column=0)
+
+        rdiotar = ttk.Radiobutton(lblfrmradio, text=_('Αρχείο Tar'), variable=self.typefile, value='typetar')
+        rdiotar.grid(row=1, column=0)
+
+        self.typefile.set('typezip')
 
         ent = ttk.Entry(frm)
         ent.grid(row=4, column=0, sticky=W+E)
@@ -190,11 +200,11 @@ class GuiBackup:
         self.changestate()
         dt = datetime.now()
         if len(self.entcomment.get()) > 0:
-            thecomment = '{0} {1}'.format(dt.strftime('%Y-%m-%d %H:%M:%S'), self.entcomment.get())
+            thecomment = '{0} {1}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'), self.entcomment.get())
         else:
-            thecomment = '{0}'.format(dt.strftime('%Y-%m-%d %H:%M:%S'))
+            thecomment = '{0}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'))
             
-        backup.Backup(filesdirs=self.lis, target=self.ent.get(), addcom=thecomment )
+        backup.Backup(filesdirs=self.lis, target=self.ent.get(), addcom=thecomment)
         
         sys.stdout = sys.__stdout__
         self.create_recent_files(self.ent.get())

@@ -34,7 +34,7 @@ def Backup(filesdirs=[r'C:\Python33'], target='zip_pyx.zip', mode='w', addcom=''
     count = 0
     target = target
     cdirs = filesdirs
-
+    
     zip_command = zipfile.ZipFile(target, mode)
     
     if len(addcom) > 0:
