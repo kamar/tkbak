@@ -24,6 +24,7 @@
 import locale
 import gettext
 import zipfile
+import tarfile
 import time
 from datetime import datetime, date
 import os
@@ -62,12 +63,14 @@ class GuiBackup:
         self.parent = parent
         self.msg = StringVar()
         self.lis = []
+#         self.minima = StringVar()
         self.typefile = StringVar()
+        self.filemode = StringVar()
         self.title = title
         self.parent.title(title)
         self.makewidgets()
         self.parent.update_idletasks()
-        self.center_window()
+        self.center_window(self.parent)
         #Try to set icon.
         try:
             self.parent.iconbitmap('@images/wilber_painter.xbm')
@@ -78,12 +81,12 @@ class GuiBackup:
         self.checkload()
         
     
-    def center_window(self):
-        width = self.parent.winfo_width()
-        height = self.parent.winfo_height()
-        sw = self.parent.winfo_screenwidth()
-        sh = self.parent.winfo_screenheight()
-        self.parent.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
+    def center_window(self, afentiko):
+        width = afentiko.winfo_width()
+        height = afentiko.winfo_height()
+        sw = afentiko.winfo_screenwidth()
+        sh = afentiko.winfo_screenheight()
+        afentiko.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
 
     def makewidgets(self):
         frm = ttk.Frame(self.parent)
@@ -114,9 +117,12 @@ class GuiBackup:
         lblfrm1.columnconfigure(0, weight=1)
         
         lboxfiles = Listbox(lblfrm1, width=40, height=10)
-        lboxfiles.grid(sticky=N)
+        lboxfiles.grid(row=0, column=0, sticky=ALL)
         self.lboxfiles = lboxfiles
-        self.lboxfiles.bind('<Double-1>', self.OnDouble)#Να το παιδέψω.
+        self.lboxfiles.bind('<Double-1>', self.OnDouble) #Να το παιδέψω.
+        vsb01 = ttk.Scrollbar(lblfrm1, orient="vertical", command=self.lboxfiles.yview)
+        self.lboxfiles.configure(yscrollcommand=vsb01.set)
+        vsb01.grid(row=0, column=1, sticky=N+S)
 #         btndel1 = ttk.Button(lblfrm1, text='Διαγραφή Επιλεγμένου', command=lambda: self.del_frm_list(None, self.lboxfiles))
 #         btndel1.grid(sticky=S)
          
@@ -125,39 +131,59 @@ class GuiBackup:
         lblfrm2.columnconfigure(0, weight=1)
         
         lboxdirs = Listbox(lblfrm2, width=40, height=10)
-        lboxdirs.grid(sticky=N)
+        lboxdirs.grid(row=0, column=0, stick=ALL)
         self.lboxdirs = lboxdirs
         self.lboxdirs.bind('<Double-1>', self.OnDouble)
+        vsb = ttk.Scrollbar(lblfrm2, orient='vertical', command=self.lboxdirs.yview)
+        self.lboxdirs.configure(yscrollcommand=vsb.set)
+        vsb.grid(row=0, column=1, sticky=N+S)
 #         btndel2 = ttk.Button(lblfrm2, text='Διαγραφή Επιλεγμένου', command=lambda: self.del_frm_list(None, self.lboxdirs))
 #         btndel2.grid(sticky=S)
+
+        btnmnia = ttk.Button(frm, text=_('Μνεία'), command=self.credits)
+        btnmnia.grid(row=0, column=3)
+
         
         lblfrmradio = ttk.LabelFrame(frm, text=_('Επιλογή Τύπου Αρχείου'))
-        lblfrmradio.grid(row=1, column=3, sticky=N)
-                
-        rdiozip = ttk.Radiobutton(lblfrmradio, text= _('Αρχείο Zip'), variable=self.typefile, value='typezip')
+        lblfrmradio.grid(row=1, column=3, sticky=N+W)
+            
+        rdiozip = ttk.Radiobutton(lblfrmradio, text= _('Αρχείο Zip'), command=self.change_filename, variable=self.typefile, value='typezip')
         rdiozip.grid(row=0, column=0)
 
-        rdiotar = ttk.Radiobutton(lblfrmradio, text=_('Αρχείο Tar'), variable=self.typefile, value='typetar')
+        rdiotar = ttk.Radiobutton(lblfrmradio, text=_('Αρχείο Tar'), command=self.change_filename,  variable=self.typefile, value='typetar')
         rdiotar.grid(row=1, column=0)
 
         self.typefile.set('typezip')
-
+        
+        lblfrmmode = ttk.Labelframe(frm, text=_('Άνοιγμα Αρχείου'))
+        lblfrmmode.grid(row=1, column=3, sticky=S)
+        
+        rdioappend = ttk.Radiobutton(lblfrmmode, text=_('για προσθήκη αρχείων'), variable=self.filemode, value='a', state=DISABLED)
+        rdioappend.grid(row=0, column=0, sticky=W)
+        
+        rdiowrite = ttk.Radiobutton(lblfrmmode, text=_('νέου για προσθήκη αρχείων'), variable=self.filemode, value='w')
+        rdiowrite.grid(row=1, column=0, sticky=W)
+        
+        rdiocomment = ttk.Radiobutton(lblfrmmode, text=_('για προσθήκη σχολίου'), variable=self.filemode, value='a',state=DISABLED)
+        rdiocomment.grid(row=2, column=0, sticky=W)
+        
+        self.filemode.set('w')        
         ent = ttk.Entry(frm)
         ent.grid(row=4, column=0, sticky=W+E)
         ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'),'zip.zip')))
         self.ent = ent
 
         defaultchk = ttk.Checkbutton(frm, text=_('Τελευταίο Αρχείο'), state=DISABLED, command='')
-        defaultchk.grid(row=4, column=1, sticky=W+E)
+        defaultchk.grid(row=1, column=3, sticky=W+E)
         
         sp1 = ttk.Separator(frm)
-        sp1.grid(row=3, column=0, columnspan=3, sticky=W+E)
+        sp1.grid(row=3, column=0, columnspan=4, sticky=W+E)
 
         lbl = ttk.Label(frm, textvariable = self.msg)
         lbl.grid(row=4, column=2, sticky=N+S+W+E)
 
         sp2 = ttk.Separator(frm)
-        sp2.grid(row=5, column=0, columnspan=3, sticky=W+E)
+        sp2.grid(row=5, column=0, columnspan=4, sticky=W+E)
         
         lblcomment = ttk.Label(frm, text = _('Γράψτε το σχόλιό σας:'))
         lblcomment.grid(row=6, column=0, sticky=W)
@@ -193,8 +219,71 @@ class GuiBackup:
         for x in range(frm.grid_size()[1]-1):
             frm.rowconfigure(x,weight=1)
 
-        self.parent.update_idletasks()
+        #self.parent.update_idletasks()
     
+    def credits(self):
+        rtk = Toplevel()
+        rtk.wm_attributes('-topmost', 1)
+        n = ttk.Notebook(rtk)
+        n.grid(row=0, column=0)
+        frm1 = ttk.Frame(n)
+        frm1.grid()
+        frm2 = ttk.Frame(n)
+        frm2.grid()
+        frm3 = ttk.Frame(n)
+        frm3.grid(sticky=ALL)
+        frm3.rowconfigure(0, weight=1)
+        frm3.columnconfigure(0, weight=1)
+        
+        n.add(frm1, text=_('Προγραμματισμός'))
+        n.add(frm2, text=_('Μετάφραση'))
+        n.insert(0, frm3, text=_('Περί'))
+        n.select(0)
+        n.enable_traversal()
+        
+        txtauthors = Text(frm1, width=45, height=10, bg='black', fg='green')
+        txtauthors.grid()
+        txtauthors.insert(END, open('AUTHORS').read())
+        txtauthors['state'] = DISABLED
+
+        txttranslators = Text(frm2, width=45, height=10, bg='black', fg='green')
+        txttranslators.insert(END,  open('TRANSLATORS').read())
+        txttranslators.grid()
+        txttranslators['state'] = DISABLED
+        
+        style = ttk.Style()
+        style.configure("f.TLabel", font=('Arial', 18, 'bold'), foreground='green', background='black')
+        lblperi = ttk.Label(frm3, anchor=CENTER, style="f.TLabel")
+        lblperi.grid(sticky=ALL)
+        lblperi['text'] = 'tkBackup ' + open('VERSION').read()
+        
+        btnclose = ttk.Button(rtk, text=_('Κλείσιμο'), command=rtk.destroy)
+        btnclose.grid(row=1, column=0)
+
+        for child in rtk.winfo_children():
+            child.grid_configure(pady=3, padx=3)
+        rtk.protocol("WM_DELETE_WINDOW", lambda: '')
+        rtk.resizable(0, 0)
+        rtk.update_idletasks()
+        self.center_window(rtk)
+        rtk.wait_window()
+        
+    def change_filename(self, file='zip', expand=True):
+        if self.typefile.get() == 'typezip':
+            file = file + '.zip'
+            if expand == True:
+                self.ent.delete(0, END)
+                self. ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'), file)))
+            else:
+                return file
+        else:
+            file = file + '.tar.gz'
+            if expand == True:
+                self.ent.delete(0, END)
+                self. ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'), file)))
+            else:
+                return file
+
     def run_script(self):
         sys.stdout = self
         self.changestate()
@@ -204,9 +293,10 @@ class GuiBackup:
         else:
             thecomment = '{0}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'))
             
-        backup.Backup(filesdirs=self.lis, target=self.ent.get(), addcom=thecomment)
+        backup.Backup(filesdirs=self.lis, target=self.ent.get(), ftype=self.typefile.get(), addcom=thecomment)
         
         sys.stdout = sys.__stdout__
+        
         self.create_recent_files(self.ent.get())
         self.changestate(True)
         
@@ -250,7 +340,10 @@ class GuiBackup:
         self.tex.insert(END, minima)
         self.tex.see(END)
         self.tex.update()
-        self.msg.set(minima.rstrip('\n'))
+        try:
+            self.msg.set(minima[:-1])
+        except:
+            pass
         
     def appendlis(self, fileordir=1):
         if fileordir == 1:
@@ -322,8 +415,8 @@ class GuiBackup:
         return the_path
     
     def impfile(self):
-        import time
-        dumpfile =  time.strftime('%Y%m%d') + '_' + time.strftime('%H%M%S') + '.zip'
+        dumpfile =  self.change_filename(time.strftime('%Y%m%d') + '_' + time.strftime('%H%M%S'), False)
+        
         p = asksaveasfilename(parent=self.parent, initialdir=os.path.expanduser('~'), initialfile=dumpfile)
         p = os.path.normpath(p)
         self.ent.delete(0, END)
@@ -416,7 +509,7 @@ class GuiBackup:
         self.tex.insert(END, '\n')
         self.tex.insert(END, _('Γεια σας!!!'))
         self.tex.update()
-        time.sleep(2)
+        time.sleep(1)
         self.parent.destroy()
 
     def restoreform(self):
@@ -486,7 +579,8 @@ class GuiRestore(GuiBackup):
         self.sxolio = StringVar()
         self.makewidgets()
         self.parent.update_idletasks()
-        self.center_window()
+        self.center_window(self.parent)
+        self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         
         
     def makewidgets(self):
@@ -497,15 +591,19 @@ class GuiRestore(GuiBackup):
         lblcomment = ttk.Label(frm, textvariable=self.sxolio)
         lblcomment.grid(row=0, column=0, columnspan=2, sticky=W+E)
 
-        lstboxfromzip = Listbox(frm, width=50,height=30)
+        lstboxfromzip = Listbox(frm, width=50,height=24)
         lstboxfromzip.grid(row=1, column=0, sticky=ALL)
         lstboxfromzip.bind('<Double-1>', self.OnDouble)
         self.lstboxfromzip = lstboxfromzip
-        
-        lstboxtorestore = Listbox(frm, width=50, height=30)
+        vscbar = ttk.Scrollbar(frm, orient="vertical", command=self.lstboxfromzip.yview)
+        self.lstboxfromzip.configure(yscrollcommand=vscbar.set)
+        vscbar.grid(row=1, column=0, sticky=E+N+S)
+        lstboxtorestore = Listbox(frm, width=50, height=24)
         lstboxtorestore.grid(row=1, column=1, sticky=ALL)
         self.lstboxtorestore = lstboxtorestore
-
+        vscbar01 = ttk.Scrollbar(frm, orient="vertical", command=self.lstboxtorestore.yview)
+        self.lstboxtorestore.configure(yscrollcommand=vscbar01.set)
+        vscbar01.grid(row=1, column=1, sticky=E+N+S)
         ent = ttk.Entry(frm, width=30)
         ent.grid(row=2, column=0,  sticky=W)
         self.ent = ent
@@ -514,8 +612,12 @@ class GuiRestore(GuiBackup):
         btnepanaforaolon.grid(row=2, column=0, sticky=E)
         self.btnepanaforaolon = btnepanaforaolon
         
-        lblminima = ttk.Label(frm, textvariable=self.minima, width=30)
-        lblminima.grid(row=2, column=1, sticky=ALL)
+#         lblminima = ttk.Label(frm, textvariable=self.minima, width=30)
+#         lblminima.grid(row=2, column=1, sticky=ALL)
+#         self.lblminima = lblminima
+        tex = ScrolledText(frm, width=50, height=3)
+        tex.grid(row=2, column=1, sticky=ALL)
+        self.tex = tex
         
         btnfindzip = ttk.Button(frm, text=_('Φόρτωση Συμπιεσμένου Αρχείου'), command= self.openthezip)
         btnfindzip.grid(row=3, column=0)
@@ -525,7 +627,8 @@ class GuiRestore(GuiBackup):
         btnextract.grid(row=3, column=1)
         self.btnextract = btnextract
         
-        
+        btncloseme = ttk.Button(frm, text=_('Κλείσιμο'), command=self.parent.destroy)
+        btncloseme.grid(row=3, column=1, sticky=E)
         self.parent.update_idletasks()
         
         for child in frm.winfo_children():
@@ -534,17 +637,28 @@ class GuiRestore(GuiBackup):
         
     def loadme(self, getthefile):
         #file = r'C:\Users\Konstas\zip.zip'
-        myzip = zipfile.ZipFile(getthefile, 'r')
-        
-        for f in myzip.namelist():
-            self.lstboxfromzip.insert(END, f)
-        
-        self.lstboxfromzip.select_set(0)
-        self.myzip = myzip
-        if len(self.myzip.comment) > 0:
-            self.sxolio.set(self.myzip.comment.decode())
-        #    for file in self.lis:
-        #        print(file)
+        if zipfile.is_zipfile(getthefile):
+            myzip = zipfile.ZipFile(getthefile, 'r')
+            
+            for f in myzip.namelist():
+                self.lstboxfromzip.insert(END, f)
+            
+            self.lstboxfromzip.select_set(0)
+    #         self.myzip = myzip
+            
+            if len(myzip.comment) > 0:
+                self.sxolio.set(myzip.comment.decode())
+            #    for file in self.lis:
+            #        print(file)
+        elif tarfile.is_tarfile(getthefile):
+            myzip = tarfile.open(getthefile, 'r')
+            
+            for f in myzip.getnames():
+                self.lstboxfromzip.insert(END, f)
+            
+            self.lstboxfromzip.select_set(0)
+    
+        myzip.close()
         self.btnfindzip['state'] = DISABLED
         
     def movetorestore(self):
@@ -570,6 +684,7 @@ class GuiRestore(GuiBackup):
     
     def openthezip(self):
         ft = [('ZIP', '.zip'),
+              ('Tar.gz', 'tar.gz'),
               ('All Files', '*')]
  
         p = askopenfilename(parent=self.parent, initialdir=os.path.expanduser('~'), \
@@ -581,14 +696,19 @@ class GuiRestore(GuiBackup):
         self.btnepanaforaolon['state'] = NORMAL
         
     def extractfromzip(self):
-        #myzip = ZipFile(self.ent.get(), 'r')
+        sys.stdout = self
         extractdir = askdirectory(title=self.title)
         if askyesno(self.title, message= _('Επαναφορά στον κατάλογο: {0};').format(extractdir)) == True:
-                msg = _('Αποσυμπιέζω το: {0}').format(file)
-                print(msg)
-                self.myzip.extract(file, extractdir)
-        print(self.myzip.comment.decode())
-        self.myzip.close()
+            backup.Restore(self.ent.get(), self.lis, extractdir)
+            sys.stdout = sys.__stdout__
+#             for file in self.lis:        
+#                 msg = _('Αποσυμπιέζω το: {0}').format(file)
+#                 self.minima.set(msg)
+#                 print(msg)
+#                 self.myzip.extract(file, extractdir)
+#         self.minima.set(self.myzip.comment.decode())
+#         print(self.myzip.comment.decode())
+#         self.myzip.close()
         self.btnextract['state'] = DISABLED
         
                 
