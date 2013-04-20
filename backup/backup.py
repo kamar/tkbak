@@ -23,6 +23,7 @@ import tarfile
 import gettext
 import locale
 import time
+import sys
 
 glossa = locale.getdefaultlocale()[0]
 
@@ -31,7 +32,7 @@ t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallbac
 _ = t.gettext
 t.install()
 
-def Backup(filesdirs=['/home/km/test', 'C:\\Python33'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
+def Backup(filesdirs=[], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
     """Function that creats compressed files zip or tar.
     USAGE:
             Backup(filesdirs, target, ftype, mode, addcom)
@@ -53,7 +54,10 @@ def Backup(filesdirs=['/home/km/test', 'C:\\Python33'], target='zip_pyx.zip', ft
         if len(addcom) > 0:
             print(_('Γράφω το σχόλιο: {0}').format(addcom))
             zip_command.comment = addcom.encode()
-    
+        if len(filesdirs) == 0:
+            print(_('Δεν υπάρχουν αρχεία ή φάκελοι για συμπίεση.'))
+            #sys.exit(0)
+            
         for cdir in cdirs:
             if os.path.isdir(cdir):
                 for rt, dirs, files in os.walk(cdir):
@@ -153,7 +157,7 @@ def Restore(ziportar='', files=[], todirectory='.'):
             count += 1
         myzipfile.close()
     else:
-        print(_('Ο τύπος του αρχείου {0} δεν υποστηρ΄΄ίζεται.').format(ziportar))
+        print(_('Ο τύπος του αρχείου {0} δεν υποστηρίζεται.').format(ziportar))
     
     print(_('Αποσυμπιέστηκαν συνολικά {0} αρχεία από το αρχείο {1}.').format(count, ziportar))
         

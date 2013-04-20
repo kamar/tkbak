@@ -26,9 +26,10 @@ import gettext
 import zipfile
 import tarfile
 import time
-from datetime import datetime, date
+import threading
 import os
 
+from datetime import datetime, date
 from tkinter import * 
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
@@ -103,8 +104,6 @@ class GuiBackup:
         loadbtn = ttk.Button(frm, text=_('Φόρτωση Προηγούμενων Αρχείων'), command=self.loadme)
         loadbtn.grid(row=0, column=0)
         self.loadbtn = loadbtn
-##        sp3 = ttk.Separator(frm, orient='vertical')
-##        sp3.grid(row=1, column=1, rowspan=2)
         
         tex = ScrolledText(frm, width=70, height=20, bg='black', fg='green')
         tex.grid(row=1, column=2, rowspan=2, sticky=ALL)
@@ -145,12 +144,12 @@ class GuiBackup:
 
         
         lblfrmradio = ttk.LabelFrame(frm, text=_('Επιλογή Τύπου Αρχείου'))
-        lblfrmradio.grid(row=1, column=3, sticky=N+W)
+        lblfrmradio.grid(row=1, column=3, sticky=N)
             
-        rdiozip = ttk.Radiobutton(lblfrmradio, text= _('Αρχείο Zip'), command=self.change_filename, variable=self.typefile, value='typezip')
+        rdiozip = ttk.Radiobutton(lblfrmradio, width=20, style="Toolbutton", text= _('Αρχείο Zip'), command=lambda:self.change_filename(self.ent.get()), variable=self.typefile, value='typezip')
         rdiozip.grid(row=0, column=0)
 
-        rdiotar = ttk.Radiobutton(lblfrmradio, text=_('Αρχείο Tar'), command=self.change_filename,  variable=self.typefile, value='typetar')
+        rdiotar = ttk.Radiobutton(lblfrmradio, width=20,  style="Toolbutton", text=_('Αρχείο Tar'), command=lambda: self.change_filename(self.ent.get()),  variable=self.typefile, value='typetar')
         rdiotar.grid(row=1, column=0)
 
         self.typefile.set('typezip')
@@ -158,15 +157,15 @@ class GuiBackup:
         lblfrmmode = ttk.Labelframe(frm, text=_('Άνοιγμα Αρχείου'))
         lblfrmmode.grid(row=1, column=3, sticky=S)
         
-        rdioappend = ttk.Radiobutton(lblfrmmode, text=_('για προσθήκη αρχείων'), variable=self.filemode, value='a', state=DISABLED)
+        rdioappend = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('για προσθήκη αρχείων και σχολίου'), variable=self.filemode, value='a')
         rdioappend.grid(row=0, column=0, sticky=W)
         
-        rdiowrite = ttk.Radiobutton(lblfrmmode, text=_('νέου για προσθήκη αρχείων'), variable=self.filemode, value='w')
+        rdiowrite = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('νέου για προσθήκη αρχείων'), variable=self.filemode, value='w')
         rdiowrite.grid(row=1, column=0, sticky=W)
-        
-        rdiocomment = ttk.Radiobutton(lblfrmmode, text=_('για προσθήκη σχολίου'), variable=self.filemode, value='a',state=DISABLED)
-        rdiocomment.grid(row=2, column=0, sticky=W)
-        
+#         
+#         rdiocomment = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('για προσθήκη σχολίου'), variable=self.filemode, value='a')
+#         rdiocomment.grid(row=2, column=0, sticky=W)
+#         
         self.filemode.set('w')        
         ent = ttk.Entry(frm)
         ent.grid(row=4, column=0, sticky=W+E)
@@ -268,19 +267,20 @@ class GuiBackup:
         self.center_window(rtk)
         rtk.wait_window()
         
-    def change_filename(self, file='zip', expand=True):
+    def change_filename(self, file , expand=True):
+        dirpath, filename = os.path.split(file)
         if self.typefile.get() == 'typezip':
-            file = file + '.zip'
+            file = filename.split('.')[0] + '.zip'
             if expand == True:
                 self.ent.delete(0, END)
-                self. ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'), file)))
+                self. ent.insert(0, os.path.normpath(os.path.join(dirpath, file)))
             else:
                 return file
         else:
-            file = file + '.tar.gz'
+            file = filename.split('.')[0]  + '.tar.gz'
             if expand == True:
                 self.ent.delete(0, END)
-                self. ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'), file)))
+                self. ent.insert(0, os.path.normpath(os.path.join(dirpath, file)))
             else:
                 return file
 
@@ -289,11 +289,12 @@ class GuiBackup:
         self.changestate()
         dt = datetime.now()
         if len(self.entcomment.get()) > 0:
-            thecomment = '{0} {1}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'), self.entcomment.get())
+            thecomment = '{0}'.format(self.entcomment.get())
         else:
             thecomment = '{0}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'))
             
-        backup.Backup(filesdirs=self.lis, target=self.ent.get(), ftype=self.typefile.get(), addcom=thecomment)
+        backup.Backup(filesdirs=self.lis, target=self.ent.get(), mode=self.filemode.get(), ftype=self.typefile.get(), \
+                      addcom=thecomment)
         
         sys.stdout = sys.__stdout__
         
@@ -315,6 +316,15 @@ class GuiBackup:
             self.btnlisd['state'] = NORMAL
             self.impfilebtn['state'] = NORMAL
             self.btnrestore['state'] = NORMAL
+    
+    def add_comm(self, myzipfile, cc):
+            if zipfile.is_zipfile(myzipfile):
+                z = zipfile.ZipFile(myzipfile, 'a')
+                z.comment = cc
+                z.close()
+            else:
+                self.write(_('Το αρχείο {0} δεν υποστηρίζει σχόλια.').format(myzipfile))
+                
             
     def del_frm_list(self, event, lboxname):
         items = lboxname.curselection()
@@ -589,9 +599,8 @@ class GuiRestore(GuiBackup):
         #frm.config(bg='black')
         
         lblcomment = ttk.Label(frm, textvariable=self.sxolio)
-        lblcomment.grid(row=0, column=0, columnspan=2, sticky=W+E)
-
-        lstboxfromzip = Listbox(frm, width=50,height=24)
+        lblcomment.grid(row=0, column=0, columnspan=3, sticky=W+E)
+        lstboxfromzip = Listbox(frm, width=50, height=24)
         lstboxfromzip.grid(row=1, column=0, sticky=ALL)
         lstboxfromzip.bind('<Double-1>', self.OnDouble)
         self.lstboxfromzip = lstboxfromzip
