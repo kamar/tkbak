@@ -32,14 +32,15 @@ from datetime import datetime, date
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
-from tkinter.filedialog import askopenfilename, askdirectory, asksaveasfilename
+from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory, asksaveasfilename
+#from tkinter import filedialog
 from tkinter.messagebox import askyesno, showinfo
 
 from backup import backup
 
 ALL = N+S+E+W
 
-print(len(sys.argv), sys.argv[0])
+##print(len(sys.argv), sys.argv[0])
 abspath = os.path.abspath(sys.argv[0])
 dir_name = os.path.dirname(abspath)
 os.chdir(dir_name)
@@ -48,8 +49,10 @@ os.chdir(dir_name)
 glossa = locale.getdefaultlocale()[0]
 print(glossa)
 
-loc = locale.getlocale()
-locale.setlocale(locale.LC_ALL, loc)
+##if sys.platform.startswith("win"):
+##    
+##    loc = locale.getlocale()
+##    locale.setlocale(locale.LC_ALL, loc)
 
 t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallback=True, \
                         languages=[glossa])
@@ -59,15 +62,15 @@ t.install()
 
 
 class GuiBackup:
-    def __init__(self, parent=None, title=_('tkBackup Εφεδρικά Αντίγραφα')):
+    def __init__(self, parent=None, title=_('tkBackup Backup Application')):
         self.parent = parent
         self.msg = StringVar()
         self.lis = []
-#         self.minima = StringVar()
+        self.minima = StringVar()
         self.typefile = StringVar()
         self.filemode = StringVar()
         self.title = title
-        self.parent.title(title)
+        self.parent.title(self.title)
         self.makewidgets()
         self.parent.update_idletasks()
         self.center_window(self.parent)
@@ -92,86 +95,82 @@ class GuiBackup:
         frm = ttk.Frame(self.parent)
         frm.grid(row=0, column=0, sticky=ALL)
 
-        btnlisf = ttk.Button(frm, text=_('Προσθήκη Αρχείων'), command=lambda: self.appendlis())
+        btnlisf = ttk.Button(frm, text=_('Add Files'), command=lambda: self.appendlis())
         btnlisf.grid(row=0, column=2, sticky=W)
         self.btnlisf = btnlisf
-        btnlisd = ttk.Button(frm, text=_('Προσθήκη Φακέλων'), command=lambda: self.appendlis(2))
+        btnlisd = ttk.Button(frm, text=_('Add Directories'), command=lambda: self.appendlis(2))
         btnlisd.grid(row=0, column=2)
         self.btnlisd = btnlisd
-        btncopyr = ttk.Button(frm, text=_('Άδεια...'), command=showlicense)
+        btncopyr = ttk.Button(frm, text=_('License...'), command=showlicense)
         btncopyr.grid(row=0, column=2, sticky=E)
-        loadbtn = ttk.Button(frm, text=_('Φόρτωση Προηγούμενων Αρχείων'), command=self.loadme)
+        loadbtn = ttk.Button(frm, text=_('Load Previous Files'), command=self.loadme)
         loadbtn.grid(row=0, column=0)
         self.loadbtn = loadbtn
 
         tex = ScrolledText(frm, width=70, height=20, bg='black', fg='green')
         tex.grid(row=1, column=2, rowspan=2, sticky=ALL)
-        msg = _('Πρόγραμμα δημιουργίας εφεδρικών αντιγράφων')
+        msg = _('Backup Application')
         tex.insert(END, msg.center(70, '*'))
         self.tex = tex
 
-        lblfrm1 = ttk.LabelFrame(frm, text=_('Αρχεία'))
+        lblfrm1 = ttk.LabelFrame(frm, text=_('Files'))
         lblfrm1.grid(row=1, column=0, columnspan=2, sticky=ALL)
         lblfrm1.columnconfigure(0, weight=1)
 
-        lboxfiles = Listbox(lblfrm1, width=40, height=10)
+        lboxfiles = Listbox(lblfrm1, width=40, height=10, selectmode=EXTENDED)
         lboxfiles.grid(row=0, column=0, sticky=ALL)
         self.lboxfiles = lboxfiles
         self.lboxfiles.bind('<Double-1>', self.OnDouble) #Να το παιδέψω.
+        self.lboxfiles.bind('<Button-3>', self.OnDouble)
         vsb01 = ttk.Scrollbar(lblfrm1, orient="vertical", command=self.lboxfiles.yview)
         self.lboxfiles.configure(yscrollcommand=vsb01.set)
         vsb01.grid(row=0, column=1, sticky=N+S)
 #         btndel1 = ttk.Button(lblfrm1, text='Διαγραφή Επιλεγμένου', command=lambda: self.del_frm_list(None, self.lboxfiles))
 #         btndel1.grid(sticky=S)
 
-        lblfrm2 = ttk.LabelFrame(frm, text=_('Φάκελοι'))
+        lblfrm2 = ttk.LabelFrame(frm, text=_('Directories'))
         lblfrm2.grid(row=2, column=0, columnspan=2, sticky=ALL)
         lblfrm2.columnconfigure(0, weight=1)
 
-        lboxdirs = Listbox(lblfrm2, width=40, height=10)
+        lboxdirs = Listbox(lblfrm2, width=40, height=10, selectmode=EXTENDED)
         lboxdirs.grid(row=0, column=0, stick=ALL)
         self.lboxdirs = lboxdirs
         self.lboxdirs.bind('<Double-1>', self.OnDouble)
         vsb = ttk.Scrollbar(lblfrm2, orient='vertical', command=self.lboxdirs.yview)
         self.lboxdirs.configure(yscrollcommand=vsb.set)
         vsb.grid(row=0, column=1, sticky=N+S)
-#         btndel2 = ttk.Button(lblfrm2, text='Διαγραφή Επιλεγμένου', command=lambda: self.del_frm_list(None, self.lboxdirs))
-#         btndel2.grid(sticky=S)
 
-        btnmnia = ttk.Button(frm, text=_('Μνεία'), command=self.credits)
+        btnmnia = ttk.Button(frm, text=_('Credits'), command=self.credits)
         btnmnia.grid(row=0, column=3)
 
 
-        lblfrmradio = ttk.LabelFrame(frm, text=_('Επιλογή Τύπου Αρχείου'))
+        lblfrmradio = ttk.LabelFrame(frm, text=_('Select File Type'))
         lblfrmradio.grid(row=1, column=3, sticky=N)
 
-        rdiozip = ttk.Radiobutton(lblfrmradio, width=20, style="Toolbutton", text= _('Αρχείο Zip'), command=lambda:self.change_filename(self.ent.get()), variable=self.typefile, value='typezip')
+        rdiozip = ttk.Radiobutton(lblfrmradio, width=20, style="Toolbutton", text= _('Zip File'), command=lambda:self.change_filename(self.ent.get()), variable=self.typefile, value='typezip')
         rdiozip.grid(row=0, column=0)
 
-        rdiotar = ttk.Radiobutton(lblfrmradio, width=20,  style="Toolbutton", text=_('Αρχείο Tar'), command=lambda: self.change_filename(self.ent.get()),  variable=self.typefile, value='typetar')
+        rdiotar = ttk.Radiobutton(lblfrmradio, width=20,  style="Toolbutton", text=_('Tar File'), command=lambda: self.change_filename(self.ent.get()),  variable=self.typefile, value='typetar')
         rdiotar.grid(row=1, column=0)
 
         self.typefile.set('typezip')
 
-        lblfrmmode = ttk.Labelframe(frm, text=_('Άνοιγμα Αρχείου'))
+        lblfrmmode = ttk.Labelframe(frm, text=_('Open File'))
         lblfrmmode.grid(row=1, column=3, sticky=S)
 
-        rdioappend = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('για προσθήκη αρχείων και σχολίου'), variable=self.filemode, value='a')
+        rdioappend = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('add files and comments'), variable=self.filemode, value='a')
         rdioappend.grid(row=0, column=0, sticky=W)
 
-        rdiowrite = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('νέου για προσθήκη αρχείων'), variable=self.filemode, value='w')
+        rdiowrite = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('new for add files'), variable=self.filemode, value='w')
         rdiowrite.grid(row=1, column=0, sticky=W)
-#
-#         rdiocomment = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('για προσθήκη σχολίου'), variable=self.filemode, value='a')
-#         rdiocomment.grid(row=2, column=0, sticky=W)
-#
+
         self.filemode.set('w')
         ent = ttk.Entry(frm)
         ent.grid(row=4, column=0, sticky=W+E)
         ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'),'zip.zip')))
         self.ent = ent
 
-        defaultchk = ttk.Checkbutton(frm, text=_('Τελευταίο Αρχείο'), state=DISABLED, command='')
+        defaultchk = ttk.Checkbutton(frm, text=_('Most recent file'), state=DISABLED, command='')
         defaultchk.grid(row=1, column=3, sticky=W+E)
 
         sp1 = ttk.Separator(frm)
@@ -183,26 +182,26 @@ class GuiBackup:
         sp2 = ttk.Separator(frm)
         sp2.grid(row=5, column=0, columnspan=4, sticky=W+E)
 
-        lblcomment = ttk.Label(frm, text = _('Γράψτε το σχόλιό σας:'))
+        lblcomment = ttk.Label(frm, text = _('Write your comment:'))
         lblcomment.grid(row=6, column=0, sticky=W)
 
         entcomment = ttk.Entry(frm, width=40)
         entcomment.grid(row=6, column=1, columnspan=2, sticky=W)
         self.entcomment = entcomment
 
-        impfilebtn = ttk.Button(frm, text=_("Αρχείο Προορισμού"), command= self.impfile)
+        impfilebtn = ttk.Button(frm, text=_("Target file"), command= self.impfile)
         impfilebtn.grid(row=7, column=0, sticky=W+E)
         self.impfilebtn =impfilebtn
 
-        strtbtn = ttk.Button(frm, text=_('Ξεκίνα'), command=self.run_script)
+        strtbtn = ttk.Button(frm, text=_('Start'), command=self.run_script)
         strtbtn.grid(row=7, column=2, sticky=W)
         self.strtbtn = strtbtn
 
-        btnrestore = ttk.Button(frm, text=_('Επαναφορά Αντιγράφου'), command=self.restoreform)
+        btnrestore = ttk.Button(frm, text=_('Restore from backup'), command=self.restoreform)
         btnrestore.grid(row=7, column=2)
         self.btnrestore = btnrestore
 
-        clsbtn = ttk.Button(frm, text=_('Κλείσιμο'), command=self.closeme)
+        clsbtn = ttk.Button(frm, text=_('Close'), command=self.closeme)
         clsbtn.grid(row=7, column=2, sticky=E)
         self.clsbtn = clsbtn
 
@@ -217,7 +216,7 @@ class GuiBackup:
         for x in range(frm.grid_size()[1]-1):
             frm.rowconfigure(x,weight=1)
 
-        #self.parent.update_idletasks()
+        self.parent.update_idletasks()
 
     def credits(self):
         rtk = Toplevel()
@@ -233,9 +232,9 @@ class GuiBackup:
         frm3.rowconfigure(0, weight=1)
         frm3.columnconfigure(0, weight=1)
 
-        n.add(frm1, text=_('Προγραμματισμός'))
-        n.add(frm2, text=_('Μετάφραση'))
-        n.insert(0, frm3, text=_('Περί'))
+        n.add(frm1, text=_('Programmers'))
+        n.add(frm2, text=_('Translators'))
+        n.insert(0, frm3, text=_('About'))
         n.select(0)
         n.enable_traversal()
 
@@ -250,12 +249,12 @@ class GuiBackup:
         txttranslators['state'] = DISABLED
 
         style = ttk.Style()
-        style.configure("f.TLabel", font=('Arial', 18, 'bold'), foreground='green', background='black')
+        style.configure("f.TLabel", font=('Arial', 14, 'bold'), foreground='green', background='black', justify=CENTER)
         lblperi = ttk.Label(frm3, anchor=CENTER, style="f.TLabel")
         lblperi.grid(sticky=ALL)
-        lblperi['text'] = 'tkBackup ' + open('VERSION').read()
+        lblperi['text'] = 'tkBackup {0}\n{1}'.format(open('VERSION').read(), _('Backup and Restore Application')) 
 
-        btnclose = ttk.Button(rtk, text=_('Κλείσιμο'), command=rtk.destroy)
+        btnclose = ttk.Button(rtk, text=_('Close'), command=rtk.destroy)
         btnclose.grid(row=1, column=0)
 
         for child in rtk.winfo_children():
@@ -290,7 +289,7 @@ class GuiBackup:
         if len(self.entcomment.get()) > 0:
             thecomment = '{0}'.format(self.entcomment.get())
         else:
-            thecomment = '{0}'.format(_('Δημιουργήθηκε την: ')+dt.strftime('%Y-%m-%d %H:%M:%S'))
+            thecomment = '{0}'.format(_('Created: ')+dt.strftime('%Y-%m-%d %H:%M:%S'))
 
         backup.Backup(filesdirs=self.lis, target=self.ent.get(), mode=self.filemode.get(), ftype=self.typefile.get(), \
                       addcom=thecomment)
@@ -322,7 +321,7 @@ class GuiBackup:
                 z.comment = cc
                 z.close()
             else:
-                self.write(_('Το αρχείο {0} δεν υποστηρίζει σχόλια.').format(myzipfile))
+                self.write(_('The file {0} does not support comments.').format(myzipfile))
 
 
     def del_frm_list(self, event, lboxname):
@@ -338,40 +337,55 @@ class GuiBackup:
     def OnDouble(self, event):
         widget = event.widget
         selection=widget.curselection()
-        val = widget.get(selection[0])
-        print(_("επιλογή:"), selection, ": '%s'" % val)
-        if askyesno(self.title, _('Να διαγραφεί το επιλεγμένο στοιχείο {0};').format(val), default='yes') == True:
-                    widget.delete(selection)
-                    self.lis.remove(val)
-##        print(self.lis)
-
+        #val = widget.get(selection[0])
+#        print(_("selection:"), selection, ": '%s'" % val)
+        nm = len(selection)
+        
+        msgplural = t.ngettext('Delete the {0} select item ?', \
+                               'Delete the {0} selected items?', nm).format(nm)
+        
+        if askyesno(self.title, msgplural, default='yes') == True:
+            pos = 0
+            for item in selection:
+                idx = int(item) - pos
+                #val = widget.get(item[0])
+                print(widget.get(idx))
+                val = widget.get(idx)
+                widget.delete(idx, idx)
+                
+                self.lis.remove(val)
+                pos += 1
+         
     def write(self, minima):
         self.tex.insert(END, minima)
         self.tex.see(END)
         self.tex.update()
         try:
-            self.msg.set(minima[:-1])
+            self.msg.set(minima.rstrip('\n'))
         except:
-            pass
+            self.msg.set(minima)
+            
 
     def appendlis(self, fileordir=1):
+        #self.parent.withdraw()        
         if fileordir == 1:
-            p = os.path.normpath(askopenfilename())
-            if not p in self.lis:
-##                p = os.path.normpath(p)
-                self.lis.append(p)
-                self.lboxfiles.insert(END, p)
-
+            p = askopenfilenames(initialdir=os.path.expanduser('~'))
+            for itm in self.parent.tk.splitlist(p):
+                itm = os.path.normpath(itm)
+                if not itm in self.lis:
+                    self.lis.append(itm)
+                    self.lboxfiles.insert(END, itm)
+        
         elif fileordir == 2:
-            p = os.path.normpath(askdirectory())
+            p = os.path.normpath(askdirectory( initialdir=os.path.expanduser('~')))
             if not p in self.lis:
                 p = os.path.normpath(p)
                 self.lis.append(p)
                 self.lboxdirs.insert(END, p)
-
-
+        #self.parent.deiconify()
+        
     def loadme(self):
-        if askyesno(parent=self.parent, title=self.title, message=_('Να φορτωθούν τα προηγούμενα πηγαία αρχεία και φάκελοι;'), default='yes') == True:
+        if askyesno(parent=self.parent, title=self.title, message=_('May I load the previous saved source files and directories?'), default='yes') == True:
             p = self.create_dirs()
             self.loadbtn['state'] = DISABLED
             try:
@@ -386,7 +400,7 @@ class GuiBackup:
                         self.lboxfiles.insert(END, item)
                         self.lis.append(item)
             except:
-                self.tex.insert(END, _('Δεν υπάρχουν αποθηκευμένα αρχεία.') +'\n')
+                self.tex.insert(END, _('No saved source files.') +'\n')
                 self.tex.update()
             finally:
                 try:
@@ -404,7 +418,7 @@ class GuiBackup:
                         self.lboxdirs.insert(END, item)
                         self.lis.append(item)
             except:
-                self.tex.insert(END, _('Δεν υπάρχουν αποθηκευμένοι φάκελοι.') + '\n')
+                self.tex.insert(END, _('No saved source directories.') + '\n')
                 self.tex.update()
             finally:
                 try:
@@ -485,7 +499,7 @@ class GuiBackup:
 
     def closeme(self):
         if len(self.lis)> 0:
-            answer = askyesno(title=self.title, message=_('Να σωθούν τα πηγαία αρχεία και οι φάκελοι για μελλοντική χρήση;'), default='yes')
+            answer = askyesno(title=self.title, message=_('Do you want to save source files and directories for later use?'), default='yes')
             if answer == True:
                 p = os.path.normpath(self.create_dirs())
                 fname = os.path.join(p, 'files.txt')
@@ -494,7 +508,7 @@ class GuiBackup:
                     l = self.lboxfiles.get(0, END)
                     for item in l:
                         fp.write(item+'\n')
-                        self.tex.insert(END, _('Γράφω το αρχείο: {0}{1}').format(item, '\n'))
+                        self.tex.insert(END, _('I am writing the file: {0}{1}').format(item, '\n'))
                         self.tex.update()
                 except:
                     pass
@@ -507,16 +521,16 @@ class GuiBackup:
                     l2 = self.lboxdirs.get(0, END)
                     for item in l2:
                         fp.write(item +'\n')
-                        self.tex.insert(END, _('Γράφω τον κατάλογο: {0}{1}').format(item, '\n'))
+                        self.tex.insert(END, _('I am writing the directory: {0}{1}').format(item, '\n'))
                         self.tex.update()
                 except:
                     pass
                 finally:
                     fp.close()
 
-        self.tex.insert(END, _('Τέλος.'))
+        self.tex.insert(END, _('The End.'))
         self.tex.insert(END, '\n')
-        self.tex.insert(END, _('Γεια σας!!!'))
+        self.tex.insert(END, _('Good Buy!!!'))
         self.tex.update()
         time.sleep(1)
         self.parent.destroy()
@@ -534,7 +548,7 @@ def showlicense():
     copyrightfile = 'docs/gpl-3.0.txt'
 
     root04 = Toplevel()
-    root04.title(_('Άδεια...'))
+    root04.title(_('License...'))
     root04.resizable(0, 0)
     try:
         root04.attributes("-toolwindow", 1)
@@ -560,7 +574,7 @@ def showlicense():
     t.configure(state=DISABLED)
 
 
-    koumpi=ttk.Button(kentrikoframe, text=_('Κλείσιμο'), command=root04.destroy)
+    koumpi=ttk.Button(kentrikoframe, text=_('Close'), command=root04.destroy)
     koumpi.grid(column =0, row=1, sticky=E)
     koumpi.bind('<Return>', keyenter)
 
@@ -579,7 +593,7 @@ def showlicense():
     root04.wait_window()
 
 class GuiRestore(GuiBackup):
-    def __init__(self, parent=None, title=_('tkbackup Επαναφορά Εφεδρικών Αντιγράφων')):
+    def __init__(self, parent=None, title=_('tkbackup Restore Backup Files')):
         self.parent = parent
         self.title = title
         self.parent.title = self.title
@@ -616,7 +630,7 @@ class GuiRestore(GuiBackup):
         ent.grid(row=2, column=0,  sticky=W)
         self.ent = ent
 
-        btnepanaforaolon = ttk.Button(frm, text=_('Όλα...'), state=DISABLED, command=self.movetorestore)
+        btnepanaforaolon = ttk.Button(frm, text=_('All...'), state=DISABLED, command=self.movetorestore)
         btnepanaforaolon.grid(row=2, column=0, sticky=E)
         self.btnepanaforaolon = btnepanaforaolon
 
@@ -627,15 +641,15 @@ class GuiRestore(GuiBackup):
         tex.grid(row=2, column=1, sticky=ALL)
         self.tex = tex
 
-        btnfindzip = ttk.Button(frm, text=_('Φόρτωση Συμπιεσμένου Αρχείου'), command= self.openthezip)
+        btnfindzip = ttk.Button(frm, text=_('Load zipped file'), command= self.openthezip)
         btnfindzip.grid(row=3, column=0)
         self.btnfindzip = btnfindzip
 
-        btnextract = ttk.Button(frm, state=DISABLED, text= _('Αποσυμπίεση'), command=self.extractfromzip)
+        btnextract = ttk.Button(frm, state=DISABLED, text= _('Deflating'), command=self.extractfromzip)
         btnextract.grid(row=3, column=1)
         self.btnextract = btnextract
 
-        btncloseme = ttk.Button(frm, text=_('Κλείσιμο'), command=self.parent.destroy)
+        btncloseme = ttk.Button(frm, text=_('Close'), command=self.parent.destroy)
         btncloseme.grid(row=3, column=1, sticky=E)
         self.parent.update_idletasks()
 
@@ -706,7 +720,7 @@ class GuiRestore(GuiBackup):
     def extractfromzip(self):
         sys.stdout = self
         extractdir = askdirectory(title=self.title)
-        if askyesno(self.title, message= _('Επαναφορά στον κατάλογο: {0};').format(extractdir)) == True:
+        if askyesno(self.title, message= _('Restore to directory: {0}?').format(extractdir)) == True:
             backup.Restore(self.ent.get(), self.lis, extractdir)
             sys.stdout = sys.__stdout__
 #             for file in self.lis:
@@ -723,6 +737,6 @@ class GuiRestore(GuiBackup):
 if __name__=='__main__':
 
     root = Tk()
-    face = GuiBackup(root)
+    GuiBackup(root)
 #     fc = GuiRestore(root)
     root.mainloop()

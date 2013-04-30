@@ -33,7 +33,22 @@ t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallbac
 _ = t.gettext
 t.install()
 
-def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Konstas\apodixispro'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom='', silent=False):
+
+logger = logging.getLogger('tkBackup Application')
+logger.setLevel(logging.INFO)
+log_file = 'tkbackup.log'
+fh = logging.FileHandler(log_file, encoding='utf-8')
+fh.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+schand = logging.StreamHandler(sys.stdout)
+schand.setLevel(logging.INFO)
+schand.setFormatter(formatter)
+logger.addHandler(schand)
+
+
+def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Konstas\apodixispro'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
     """Function that creats compressed files zip or tar.
     USAGE:
             Backup(filesdirs, target, ftype, mode, addcom)
@@ -53,11 +68,10 @@ def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Kons
         zip_command = zipfile.ZipFile(target, mode)
 
         if len(addcom) > 0:
-            messagelog(_('Γράφω το σχόλιο: {0}').format(addcom), silent)
+            messagelog(_('Writing the comment: {0}').format(addcom))
             zip_command.comment = addcom.encode()
         if len(filesdirs) == 0:
-           messagelog
-           messagelog(_('Δεν υπάρχουν αρχεία ή φάκελοι για συμπίεση.'), silent)
+            messagelog(_('No files or directories for compressing.'))
             #sys.exit(0)
 
         for cdir in cdirs:
@@ -66,29 +80,29 @@ def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Kons
                     for file in files:
 
                         try:
-                            minima = _('Συμπιέζω: ...{0}{1}').format(os.sep, file)
-                            messagelog(minima, silent)
+                            minima = _('Compressing: ...{0}{1}').format(os.sep, file)
+                            messagelog(minima)
                             folder = os.path.join(rt, file)
                             folder = folder.replace(os.path.expanduser('~'), "")
                             zip_command.write(os.path.join(rt, file), arcname=folder)
                             count += 1
                         except:
-                            minima = _('Αποτυχία συμπίεσης του {0}').format(file)
-                            messagelog(minima, silent)
+                            minima = _('Failled to compress {0}').format(file)
+                            messagelog(minima)
                             pass
 
             elif os.path.isfile(cdir):
                 try:
-                    minima = _('Συμπιέζω: ...{0}').format(os.path.normpath(cdir))
-                    messagelog(minima, silent)
+                    minima = _('Compressing: ...{0}').format(os.path.normpath(cdir))
+                    messagelog(minima)
                     folder = os.path.normpath(cdir)
                     folder = folder.replace(os.path.expanduser('~'), "")
 
                     zip_command.write(os.path.normpath(cdir), arcname=folder)
                     count += 1
                 except:
-                    minima = _('Αποτυχία συμπίεσης του {0}').format(os.path.normpath(cdir))
-                    messagelog(minima, silent)
+                    minima = _('Failled to compress {0}').format(os.path.normpath(cdir))
+                    messagelog(minima)
                     pass
 #         zip_command.close()
 
@@ -97,7 +111,7 @@ def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Kons
         zip_command = tarfile.open(target, mode)
 
         if len(addcom) > 0:
-            messagelog(_('Δεν υπάρχει δυνατότητα εισαγωγής σχολίου.'), silent)
+            messagelog(_('There is not support for comments.'))
 
         for cdir in cdirs:
             if os.path.isdir(cdir):
@@ -105,77 +119,73 @@ def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Kons
                     for file in files:
 
                         try:
-                            minima = _('Συμπιέζω: ...{0}{1}').format(os.sep, file)
-                            messagelog(minima, silent)
+                            minima = _('Compressing: ...{0}{1}').format(os.sep, file)
+                            messagelog(minima)
                             folder = os.path.join(rt, file)
                             folder = folder.replace(os.path.expanduser('~'), "")
                             zip_command.add(os.path.join(rt, file), arcname=folder)
                             count += 1
                         except:
-                            minima = _('Αποτυχία συμπίεσης του {0}').format(file)
-                            messagelog(minima, silent)
+                            minima = _('Failled to compress {0}').format(file)
+                            messagelog(minima)
                             pass
 
             elif os.path.isfile(cdir):
                 try:
-                    minima = _('Συμπιέζω: ...{0}').format(os.path.normpath(cdir))
-                    messagelog(minima, silent)
+                    minima = _('Compressing: ...{0}').format(os.path.normpath(cdir))
+                    messagelog(minima)
                     folder = os.path.normpath(cdir)
                     folder = folder.replace(os.path.expanduser('~'), "")
 
                     zip_command.add(os.path.normpath(cdir), arcname=folder)
                     count += 1
                 except:
-                    minima = _('Αποτυχία συμπίεσης του {0}').format(os.path.normpath(cdir))
-                    messagelog(minima, silent)
+                    minima = _('Failled to compress {0}').format(os.path.normpath(cdir))
+                    messagelog(minima)
                     pass
-    messagelog(_('Συμπιέστηκε το αρχείο {0}').format(target), silent)
+    messagelog(_('The file {0} is compressed').format(target))
     zip_command.close()
 
-    minima = _('Δημιουργήθηκε το αρχείο: {0}{1}').format(os.path.normpath(target), '\n')
-    messagelog(minima, silent)
+    minima = _('The file: {0} is created {1}').format(os.path.normpath(target), '\n')
+    messagelog(minima)
 
-    minima = _('Συμπιέστηκαν συνολικά {0} αρχεία.{1}').format(count, '\n')
-    messagelog(minima, silent)
+    minima = _('Compressed total {0} files.{1}').format(count, '\n')
+    messagelog(minima)
 
-def Restore(ziportar='', files=[], todirectory='.', silent=False):
+def Restore(ziportar='', files=[], todirectory='.'):
     count = 0
     if zipfile.is_zipfile(ziportar) == True:
-        messagelog(_('Το αρχείο {0} είναι zip').format(ziportar), silent)
+        messagelog(_('The file type of {0} is zip').format(ziportar))
         time.sleep(3)
         myzipfile = zipfile.ZipFile(ziportar, 'r')
         for file in files:
-            msg = _('Αποσυμπιέζω το: {0}').format(file)
-            messagelog(msg, silent)
+            msg = _('Decompressing: {0}').format(file)
+            messagelog(msg)
             myzipfile.extract(file, todirectory)
             count += 1
         myzipfile.close()
     elif tarfile.is_tarfile(ziportar) == True:
-        messagelog(_('Το αρχείο {0} είναι tar').format(ziportar), silent)
+        messagelog(_('The type file of {0} is tar').format(ziportar))
         time.sleep(3)
         myzipfile = tarfile.open(ziportar)
         for file in files:
-            msg = _('Αποσυμπιέζω το: {0}').format(file)
-            messagelog(msg, silent)
+            msg = _('Decompressing: {0}').format(file)
+            messagelog(msg)
             myzipfile.extract(file, todirectory)
             count += 1
         myzipfile.close()
     else:
-        messagelog(_('Ο τύπος του αρχείου {0} δεν υποστηρίζεται.').format(ziportar), silent)
+        messagelog(_('The file type of {0} is not supported.').format(ziportar))
 
-    messagelog(_('Αποσυμπιέστηκαν συνολικά {0} αρχεία από το αρχείο {1}.').format(count, ziportar), silent)
+    messagelog(_('Decompressed total {0} files from the file {1}.').format(count, ziportar))
 
 
-def messagelog(msg, where):
-    if where == False:
-        print(msg)
-    else:
-        log_file = 'tkbackup.log'
-        logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(message)s ')
-        logging.info(msg)
-        logging.shutdown()
-
+def messagelog(msg):
+    print(msg)
+    logger.info(msg)
+    
+    
 
 if __name__ == '__main__':
-    Backup(addcom='Δημιουργήθηκε από τον ΚΜ.', silent=True)
+    Backup(addcom='Δημιουργήθηκε από τον ΚΜ.')
     #Backup(target='tarf.tar.gz', mode='w', ftype='typetar')
