@@ -71,7 +71,9 @@ class GuiBackup:
         self.filemode = StringVar()
         self.title = title
         self.parent.title(self.title)
+        self.maketoolbar()
         self.makewidgets()
+        self.makebottomtoolbar()
         self.parent.update_idletasks()
         self.center_window(self.parent)
         #Try to set icon.
@@ -91,22 +93,69 @@ class GuiBackup:
         sh = afentiko.winfo_screenheight()
         afentiko.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
 
+    def maketoolbar(self):
+        toolbar = ttk.Frame(self.parent)
+        toolbar.grid(row=0, column=0, sticky=W+E)
+        
+        loadbtn = ttk.Button(toolbar, text=_('Load Previous Files'), command=self.loadme)
+        loadbtn.grid(row=0, column=0, sticky=W)
+        self.loadbtn = loadbtn
+        
+        btnlisf = ttk.Button(toolbar, text=_('Add Files'), command=lambda: self.appendlis())
+        btnlisf.grid(row=0, column=1, sticky=E)
+        self.btnlisf = btnlisf
+        
+        btnlisd = ttk.Button(toolbar, text=_('Add Directories'), command=lambda: self.appendlis(2))
+        btnlisd.grid(row=0, column=2, sticky=W)
+        self.btnlisd = btnlisd
+        
+        btncopyr = ttk.Button(toolbar, text=_('License...'), command=showlicense)
+        btncopyr.grid(row=0, column=3, sticky=E)
+        
+        btnmnia = ttk.Button(toolbar, text=_('Credits'), command=self.credits)
+        btnmnia.grid(row=0, column=4, sticky=E)
+    
+        for child in toolbar.winfo_children():
+            child.grid_configure(pady=3, padx=3)
+    
+        for x in range(toolbar.grid_size()[0]-1):
+            toolbar.columnconfigure(x, weight=1)
+        for x in range(toolbar.grid_size()[1]-1):
+            toolbar.rowconfigure(x,weight=1)
+
+    def makebottomtoolbar(self):
+        btoolbar = ttk.Frame(self.parent)
+        btoolbar.grid(row=2, column=0, sticky=W+E)
+
+        impfilebtn = ttk.Button(btoolbar, text=_("Target file"), command= self.impfile)
+        impfilebtn.grid(row=0, column=0, sticky=W)
+        self.impfilebtn =impfilebtn
+
+        strtbtn = ttk.Button(btoolbar, text=_('Start'), command=self.run_script)
+        strtbtn.grid(row=0, column=1, sticky=W+E)
+        self.strtbtn = strtbtn
+
+        btnrestore = ttk.Button(btoolbar, text=_('Restore from backup'), command=self.restoreform)
+        btnrestore.grid(row=0, column=2)
+        self.btnrestore = btnrestore
+
+        clsbtn = ttk.Button(btoolbar, text=_('Close'), command=self.closeme)
+        clsbtn.grid(row=0, column=3, sticky=E)
+        self.clsbtn = clsbtn
+        
+        for child in btoolbar.winfo_children():
+            child.grid_configure(pady=3, padx=3)
+    
+        for x in range(btoolbar.grid_size()[0]-1):
+            btoolbar.columnconfigure(x, weight=1)
+        for x in range(btoolbar.grid_size()[1]-1):
+            btoolbar.rowconfigure(x,weight=1)
+
+    
     def makewidgets(self):
         frm = ttk.Frame(self.parent)
-        frm.grid(row=0, column=0, sticky=ALL)
-
-        btnlisf = ttk.Button(frm, text=_('Add Files'), command=lambda: self.appendlis())
-        btnlisf.grid(row=0, column=2, sticky=W)
-        self.btnlisf = btnlisf
-        btnlisd = ttk.Button(frm, text=_('Add Directories'), command=lambda: self.appendlis(2))
-        btnlisd.grid(row=0, column=2)
-        self.btnlisd = btnlisd
-        btncopyr = ttk.Button(frm, text=_('License...'), command=showlicense)
-        btncopyr.grid(row=0, column=2, sticky=E)
-        loadbtn = ttk.Button(frm, text=_('Load Previous Files'), command=self.loadme)
-        loadbtn.grid(row=0, column=0)
-        self.loadbtn = loadbtn
-
+        frm.grid(row=1, column=0, sticky=ALL)
+    
         tex = ScrolledText(frm, width=70, height=20, bg='black', fg='green')
         tex.grid(row=1, column=2, rowspan=2, sticky=ALL)
         msg = _('Backup Application')
@@ -140,10 +189,6 @@ class GuiBackup:
         self.lboxdirs.configure(yscrollcommand=vsb.set)
         vsb.grid(row=0, column=1, sticky=N+S)
 
-        btnmnia = ttk.Button(frm, text=_('Credits'), command=self.credits)
-        btnmnia.grid(row=0, column=3)
-
-
         lblfrmradio = ttk.LabelFrame(frm, text=_('Select File Type'))
         lblfrmradio.grid(row=1, column=3, sticky=N)
 
@@ -165,13 +210,14 @@ class GuiBackup:
         rdiowrite.grid(row=1, column=0, sticky=W)
 
         self.filemode.set('w')
+        
         ent = ttk.Entry(frm)
-        ent.grid(row=4, column=0, sticky=W+E)
+        ent.grid(row=4, column=0, columnspan=2, sticky=W+E)
         ent.insert(0, os.path.normpath(os.path.join(os.path.expanduser('~'),'zip.zip')))
         self.ent = ent
 
-        defaultchk = ttk.Checkbutton(frm, text=_('Most recent file'), state=DISABLED, command='')
-        defaultchk.grid(row=1, column=3, sticky=W+E)
+#         defaultchk = ttk.Checkbutton(frm, text=_('Most recent file'), state=DISABLED, command='')
+#         defaultchk.grid(row=1, column=3, sticky=W+E)
 
         sp1 = ttk.Separator(frm)
         sp1.grid(row=3, column=0, columnspan=4, sticky=W+E)
@@ -182,34 +228,20 @@ class GuiBackup:
         sp2 = ttk.Separator(frm)
         sp2.grid(row=5, column=0, columnspan=4, sticky=W+E)
 
-        lblcomment = ttk.Label(frm, text = _('Write your comment:'))
-        lblcomment.grid(row=6, column=0, sticky=W)
-
-        entcomment = ttk.Entry(frm, width=40)
-        entcomment.grid(row=6, column=1, columnspan=2, sticky=W)
+#         lblcomment = ttk.Label(frm, text = _('Write your comment:'))
+#         lblcomment.grid(row=2, column=3, sticky=N+W+E)
+        lblfrmaddcomment = ttk.LabelFrame(frm, text= _('Write your comment:'))
+        lblfrmaddcomment.grid(row=2, column=3, sticky=W+E)
+        
+        entcomment = ttk.Entry(lblfrmaddcomment, width=40)
+        entcomment.grid(row=2, column=3, sticky=W+E)
         self.entcomment = entcomment
-
-        impfilebtn = ttk.Button(frm, text=_("Target file"), command= self.impfile)
-        impfilebtn.grid(row=7, column=0, sticky=W+E)
-        self.impfilebtn =impfilebtn
-
-        strtbtn = ttk.Button(frm, text=_('Start'), command=self.run_script)
-        strtbtn.grid(row=7, column=2, sticky=W)
-        self.strtbtn = strtbtn
-
-        btnrestore = ttk.Button(frm, text=_('Restore from backup'), command=self.restoreform)
-        btnrestore.grid(row=7, column=2)
-        self.btnrestore = btnrestore
-
-        clsbtn = ttk.Button(frm, text=_('Close'), command=self.closeme)
-        clsbtn.grid(row=7, column=2, sticky=E)
-        self.clsbtn = clsbtn
 
         for child in frm.winfo_children():
             child.grid_configure(pady=3, padx=3)
 
         self.parent.columnconfigure(0, weight=1)
-        self.parent.rowconfigure(0, weight=1)
+        self.parent.rowconfigure(1, weight=1)
 
         for x in range(frm.grid_size()[0]-1):
             frm.columnconfigure(x, weight=1)
@@ -269,6 +301,7 @@ class GuiBackup:
         dirpath, filename = os.path.split(file)
         if self.typefile.get() == 'typezip':
             file = filename.split('.')[0] + '.zip'
+            self.entcomment['state'] = NORMAL
             if expand == True:
                 self.ent.delete(0, END)
                 self. ent.insert(0, os.path.normpath(os.path.join(dirpath, file)))
@@ -276,6 +309,7 @@ class GuiBackup:
                 return file
         else:
             file = filename.split('.')[0]  + '.tar.gz'
+            self.entcomment['state'] = DISABLED
             if expand == True:
                 self.ent.delete(0, END)
                 self. ent.insert(0, os.path.normpath(os.path.join(dirpath, file)))
