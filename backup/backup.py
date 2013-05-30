@@ -68,11 +68,13 @@ def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Kons
         zip_command = zipfile.ZipFile(target, mode)
 
         if len(addcom) > 0:
+            print(len(addcom))
             messagelog(_('Writing the comment: {0}').format(addcom))
             zip_command.comment = addcom.encode()
+#             messagelog(zip_command.comment.decode())
         if len(filesdirs) == 0:
             messagelog(_('No files or directories for compressing.'))
-            #sys.exit(0)
+            zip_command.close()
 
         for cdir in cdirs:
             if os.path.isdir(cdir):
@@ -187,5 +189,8 @@ def messagelog(msg):
     
 
 if __name__ == '__main__':
-    Backup(addcom='Δημιουργήθηκε από τον ΚΜ.')
-    #Backup(target='tarf.tar.gz', mode='w', ftype='typetar')
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-b", help="Backups selected files and directories.")
+    parser.add_argument("-r", help="Restores from compressed file.")
+    

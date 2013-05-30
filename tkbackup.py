@@ -94,6 +94,9 @@ class GuiBackup:
         afentiko.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
 
     def maketoolbar(self):
+        #st = ttk.Style()
+        #st.configure("f.TFrame", background='black')
+
         toolbar = ttk.Frame(self.parent)
         toolbar.grid(row=0, column=0, sticky=W+E)
         
@@ -102,7 +105,7 @@ class GuiBackup:
         self.loadbtn = loadbtn
         
         btnlisf = ttk.Button(toolbar, text=_('Add Files'), command=lambda: self.appendlis())
-        btnlisf.grid(row=0, column=1, sticky=E)
+        btnlisf.grid(row=0, column=0, sticky=E)
         self.btnlisf = btnlisf
         
         btnlisd = ttk.Button(toolbar, text=_('Add Directories'), command=lambda: self.appendlis(2))
@@ -110,20 +113,22 @@ class GuiBackup:
         self.btnlisd = btnlisd
         
         btncopyr = ttk.Button(toolbar, text=_('License...'), command=showlicense)
-        btncopyr.grid(row=0, column=3, sticky=E)
+        btncopyr.grid(row=0, column=2, sticky=E)
         
         btnmnia = ttk.Button(toolbar, text=_('Credits'), command=self.credits)
-        btnmnia.grid(row=0, column=4, sticky=E)
+        btnmnia.grid(row=0, column=3, sticky=E)
     
         for child in toolbar.winfo_children():
-            child.grid_configure(pady=3, padx=3)
+            child.grid_configure(pady=4, padx=4)
     
         for x in range(toolbar.grid_size()[0]-1):
             toolbar.columnconfigure(x, weight=1)
-        for x in range(toolbar.grid_size()[1]-1):
-            toolbar.rowconfigure(x,weight=1)
+        #for x in range(toolbar.grid_size()[1]-1):
+        #    toolbar.rowconfigure(x,weight=1)
 
     def makebottomtoolbar(self):
+        #st = ttk.Style()
+        #st.configure("f.TFrame", background='black')
         btoolbar = ttk.Frame(self.parent)
         btoolbar.grid(row=2, column=0, sticky=W+E)
 
@@ -132,7 +137,7 @@ class GuiBackup:
         self.impfilebtn =impfilebtn
 
         strtbtn = ttk.Button(btoolbar, text=_('Start'), command=self.run_script)
-        strtbtn.grid(row=0, column=1, sticky=W+E)
+        strtbtn.grid(row=0, column=0, sticky=E)
         self.strtbtn = strtbtn
 
         btnrestore = ttk.Button(btoolbar, text=_('Restore from backup'), command=self.restoreform)
@@ -144,7 +149,7 @@ class GuiBackup:
         self.clsbtn = clsbtn
         
         for child in btoolbar.winfo_children():
-            child.grid_configure(pady=3, padx=3)
+            child.grid_configure(pady=4, padx=4)
     
         for x in range(btoolbar.grid_size()[0]-1):
             btoolbar.columnconfigure(x, weight=1)
@@ -163,7 +168,7 @@ class GuiBackup:
         self.tex = tex
 
         lblfrm1 = ttk.LabelFrame(frm, text=_('Files'))
-        lblfrm1.grid(row=1, column=0, columnspan=2, sticky=ALL)
+        lblfrm1.grid(row=1, column=0, sticky=ALL)
         lblfrm1.columnconfigure(0, weight=1)
 
         lboxfiles = Listbox(lblfrm1, width=40, height=10, selectmode=EXTENDED)
@@ -178,7 +183,7 @@ class GuiBackup:
 #         btndel1.grid(sticky=S)
 
         lblfrm2 = ttk.LabelFrame(frm, text=_('Directories'))
-        lblfrm2.grid(row=2, column=0, columnspan=2, sticky=ALL)
+        lblfrm2.grid(row=2, column=0, sticky=ALL)
         lblfrm2.columnconfigure(0, weight=1)
 
         lboxdirs = Listbox(lblfrm2, width=40, height=10, selectmode=EXTENDED)
@@ -192,10 +197,10 @@ class GuiBackup:
         lblfrmradio = ttk.LabelFrame(frm, text=_('Select File Type'))
         lblfrmradio.grid(row=1, column=3, sticky=N)
 
-        rdiozip = ttk.Radiobutton(lblfrmradio, width=20, style="Toolbutton", text= _('Zip File'), command=lambda:self.change_filename(self.ent.get()), variable=self.typefile, value='typezip')
+        rdiozip = ttk.Radiobutton(lblfrmradio, width=20, text= _('Zip File'), command=lambda:self.change_filename(self.ent.get()), variable=self.typefile, value='typezip')
         rdiozip.grid(row=0, column=0)
 
-        rdiotar = ttk.Radiobutton(lblfrmradio, width=20,  style="Toolbutton", text=_('Tar File'), command=lambda: self.change_filename(self.ent.get()),  variable=self.typefile, value='typetar')
+        rdiotar = ttk.Radiobutton(lblfrmradio, width=20, text=_('Tar File'), command=lambda: self.change_filename(self.ent.get()),  variable=self.typefile, value='typetar')
         rdiotar.grid(row=1, column=0)
 
         self.typefile.set('typezip')
@@ -203,10 +208,10 @@ class GuiBackup:
         lblfrmmode = ttk.Labelframe(frm, text=_('Open File'))
         lblfrmmode.grid(row=1, column=3, sticky=S)
 
-        rdioappend = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('add files and comments'), variable=self.filemode, value='a')
+        rdioappend = ttk.Radiobutton(lblfrmmode, text=_('add files and comments'), variable=self.filemode, value='a')
         rdioappend.grid(row=0, column=0, sticky=W)
 
-        rdiowrite = ttk.Radiobutton(lblfrmmode, style="Toolbutton", text=_('new for add files'), variable=self.filemode, value='w')
+        rdiowrite = ttk.Radiobutton(lblfrmmode, text=_('new for add files'), variable=self.filemode, value='w')
         rdiowrite.grid(row=1, column=0, sticky=W)
 
         self.filemode.set('w')
@@ -231,14 +236,14 @@ class GuiBackup:
 #         lblcomment = ttk.Label(frm, text = _('Write your comment:'))
 #         lblcomment.grid(row=2, column=3, sticky=N+W+E)
         lblfrmaddcomment = ttk.LabelFrame(frm, text= _('Write your comment:'))
-        lblfrmaddcomment.grid(row=2, column=3, sticky=W+E)
+        lblfrmaddcomment.grid(row=2, column=3, sticky=W)
         
-        entcomment = ttk.Entry(lblfrmaddcomment, width=40)
-        entcomment.grid(row=2, column=3, sticky=W+E)
+        entcomment = ttk.Entry(lblfrmaddcomment, width=30)
+        entcomment.grid(row=2, column=3, sticky=W)
         self.entcomment = entcomment
 
         for child in frm.winfo_children():
-            child.grid_configure(pady=3, padx=3)
+            child.grid_configure(pady=4, padx=4)
 
         self.parent.columnconfigure(0, weight=1)
         self.parent.rowconfigure(1, weight=1)
@@ -352,7 +357,7 @@ class GuiBackup:
     def add_comm(self, myzipfile, cc):
             if zipfile.is_zipfile(myzipfile):
                 z = zipfile.ZipFile(myzipfile, 'a')
-                z.comment = cc
+                z.comment = cc.encode('utf-8')
                 z.close()
             else:
                 self.write(_('The file {0} does not support comments.').format(myzipfile))
@@ -391,8 +396,8 @@ class GuiBackup:
                 pos += 1
          
     def write(self, minima):
-        self.tex.insert(END, minima)
-        self.tex.see(END)
+        self.tex.insert(2.0, minima)
+        #self.tex.see(END)
         self.tex.update()
         try:
             self.msg.set(minima.rstrip('\n'))
@@ -542,8 +547,8 @@ class GuiBackup:
                     l = self.lboxfiles.get(0, END)
                     for item in l:
                         fp.write(item+'\n')
-                        self.tex.insert(END, _('I am writing the file: {0}{1}').format(item, '\n'))
-                        self.tex.update()
+                        self.write(_('I am writing the file: {0}{1}').format(item, '\n'))
+                        #self.tex.update()
                 except:
                     pass
                 finally:
@@ -555,17 +560,17 @@ class GuiBackup:
                     l2 = self.lboxdirs.get(0, END)
                     for item in l2:
                         fp.write(item +'\n')
-                        self.tex.insert(END, _('I am writing the directory: {0}{1}').format(item, '\n'))
-                        self.tex.update()
+                        self.write( _('I am writing the directory: {0}{1}').format(item, '\n'))
+                        #self.tex.update()
                 except:
                     pass
                 finally:
                     fp.close()
 
-        self.tex.insert(END, _('The End.'))
-        self.tex.insert(END, '\n')
-        self.tex.insert(END, _('Good Buy!!!'))
-        self.tex.update()
+        self.write( _('The End.'))
+        self.write( '\n')
+        self.write( _('Good Buy!!!'))
+        #self.tex.update()
         time.sleep(1)
         self.parent.destroy()
 
