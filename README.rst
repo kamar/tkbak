@@ -49,18 +49,4 @@ The application has these features:
 
 - Save the source files and directories for repeating the former tasks.
 
-Screenshots
------------
 
-.. figure:: images/01screen.png
-   :scale: 70 %
-   :align: center
-   :figclass: align-center
-
-.. image:: images/02screen.png
-   :scale: 70 %
-   :align: center
-
-.. image:: images/03screen.png 
-   :scale: 70 %
-   :align: center
