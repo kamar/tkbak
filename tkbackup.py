@@ -80,7 +80,7 @@ class GuiBackup:
         try:
             self.parent.iconbitmap('@images/wilber_painter.xbm')
         except:
-            img = PhotoImage(file='docs/gplv3-88x31.gif')
+            img = PhotoImage(file='docs/tkbackup.gif')
             self.parent.tk.call('wm', 'iconphoto', root._w, img)
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
