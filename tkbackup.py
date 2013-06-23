@@ -71,19 +71,24 @@ class GuiBackup:
         self.filemode = StringVar()
         self.title = title
         self.parent.title(self.title)
+        self.parent.iconname('tkBackup')
+        self.create_icon()
         self.maketoolbar()
         self.makewidgets()
         self.makebottomtoolbar()
         self.parent.update_idletasks()
         self.center_window(self.parent)
-        #Try to set icon.
-        try:
-            self.parent.iconbitmap('@images/wilber_painter.xbm')
-        except:
-            img = PhotoImage(file='docs/tkbackup.gif')
-            self.parent.tk.call('wm', 'iconphoto', root._w, img)
+
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
+    
+    def create_icon(self):
+        #Try to set icon.
+        try:
+           self.parent.iconbitmap('@images/wilber_painter.xbm')
+        except:
+            img = PhotoImage(file='docs/tkbackup.gif')
+            self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
 
 
     def center_window(self, afentiko):
@@ -165,6 +170,9 @@ class GuiBackup:
         tex.grid(row=1, column=2, rowspan=2, sticky=ALL)
         msg = _('Backup Application')
         tex.insert(END, msg.center(70, '*'))
+        tex.tag_add('protigrammi', '1.0', '1.end')
+        tex.tag_config('protigrammi', background='green', foreground='black')
+        tex.tag_bind('protigrammi', '<Double-1>', self.creditbind)
         self.tex = tex
 
         lblfrm1 = ttk.LabelFrame(frm, text=_('Files'))
@@ -254,6 +262,9 @@ class GuiBackup:
             frm.rowconfigure(x,weight=1)
 
         self.parent.update_idletasks()
+
+    def creditbind(self, event):
+        self.credits()
 
     def credits(self):
         rtk = Toplevel()
@@ -776,6 +787,11 @@ class GuiRestore(GuiBackup):
 if __name__=='__main__':
 
     root = Tk()
+#    img = PhotoImage(file='docs/tkbackup.gif')
+#    root.tk.call('wm', 'iconphoto', root._w, img)
+
     GuiBackup(root)
 #     fc = GuiRestore(root)
+
+   
     root.mainloop()
