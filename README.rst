@@ -2,7 +2,10 @@
 tkBackup Backup and Restore Application 
 =======================================
 :Author: Konstas Marmatakis <marmako@gmail.com>
-:Date: 2013-04-24
+
+.. |date| date::
+
+:Date: |date|
 :Description: This is an application for backup and restore files.
 :Requirements: Requirements
 :INSTALL: Installation
