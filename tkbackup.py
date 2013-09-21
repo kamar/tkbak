@@ -55,7 +55,7 @@ print(glossa)
 ##    locale.setlocale(locale.LC_ALL, loc)
 
 t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallback=True, \
-                        languages=[glossa])
+                        languages=[glossa]) # t = Translation.
 _ = t.gettext
 t.install()
 
@@ -787,11 +787,6 @@ class GuiRestore(GuiBackup):
 if __name__=='__main__':
 
     root = Tk()
-#    img = PhotoImage(file='docs/tkbackup.gif')
-#    root.tk.call('wm', 'iconphoto', root._w, img)
-
     GuiBackup(root)
-#     fc = GuiRestore(root)
-
-   
+ 
     root.mainloop()
