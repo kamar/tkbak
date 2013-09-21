@@ -85,7 +85,7 @@ class GuiBackup:
     def create_icon(self):
         #Try to set icon.
         try:
-           self.parent.iconbitmap('@images/wilber_painter.xbm')
+            self.parent.iconbitmap('@images/wilber_painter.xbm')
         except:
             img = PhotoImage(file='docs/tkbackup.gif')
             self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
