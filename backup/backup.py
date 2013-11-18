@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 '''
-backup -- shortdesc
+backup -- Creates the zip files and backup.
 
-backup is a description
+Command line script for backup and ziping files.
 
-It defines classes_and_methods
+@author:     K. Marmatakis
 
-@author:     user_name
+@copyright:  2013 All rights reserved.
 
-@copyright:  2013 organization_name. All rights reserved.
+@license:   GNU/GPL v3
 
-@license:    license
+@contact:   <marmako@gmail.com> 
 
-@contact:    user_email
-@deffield    updated: Updated
 '''
 
 import os
@@ -48,7 +46,7 @@ schand.setFormatter(formatter)
 logger.addHandler(schand)
 
 
-def Backup(filesdirs=['/home/km/python', '/home/km/programming', r'C:\Users\Konstas\apodixispro'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
+def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
     """Function that creats compressed files zip or tar.
     USAGE:
             Backup(filesdirs, target, ftype, mode, addcom)
