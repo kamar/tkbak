@@ -55,7 +55,7 @@ print(glossa)
 ##    locale.setlocale(locale.LC_ALL, loc)
 
 t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallback=True, \
-                        languages=[glossa])
+                        languages=[glossa]) # t = Translation.
 _ = t.gettext
 t.install()
 
@@ -85,7 +85,7 @@ class GuiBackup:
     def create_icon(self):
         #Try to set icon.
         try:
-           self.parent.iconbitmap('@images/wilber_painter.xbm')
+            self.parent.iconbitmap('@images/wilber_painter.xbm')
         except:
             img = PhotoImage(file='docs/tkbackup.gif')
             self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
@@ -787,11 +787,6 @@ class GuiRestore(GuiBackup):
 if __name__=='__main__':
 
     root = Tk()
-#    img = PhotoImage(file='docs/tkbackup.gif')
-#    root.tk.call('wm', 'iconphoto', root._w, img)
-
     GuiBackup(root)
-#     fc = GuiRestore(root)
-
-   
+ 
     root.mainloop()
