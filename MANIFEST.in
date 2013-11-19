@@ -1,6 +1,6 @@
 include README.rst
-include tkbackup.py
+include tkbak.py
 
-recursive-include locale *
-recursive-include docs *
+recursive-include backup/locale/el_GR/LC_MESSAGES *
+recursive-include backup/docs *
 
