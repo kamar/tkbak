@@ -41,9 +41,11 @@ from backup import backup
 ALL = N+S+E+W
 
 ##print(len(sys.argv), sys.argv[0])
-abspath = os.path.abspath(sys.argv[0])
-dir_name = os.path.dirname(abspath)
-os.chdir(dir_name)
+# print(sys.argv[0])
+# abspath = os.path.abspath(sys.argv[0])
+# dir_name = os.path.dirname(abspath)
+# print(dir_name)
+# os.chdir(dir_name)
 
 
 glossa = locale.getdefaultlocale()[0]
