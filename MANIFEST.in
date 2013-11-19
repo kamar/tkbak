@@ -1,0 +1,6 @@
+include README.rst
+include tkbackup.py
+
+recursive-include locale *
+recursive-include docs *
+
