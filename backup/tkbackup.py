@@ -86,10 +86,10 @@ class GuiBackup:
     
     def create_icon(self):
         #Try to set icon.
-#         try:
-#             self.parent.iconbitmap('@images/wilber_painter.xbm')
-#         except:
-            img = PhotoImage(file=dir_name + '/docs/tkbackup.gif')
+         try:
+             self.parent.iconbitmap('@' + dir_name + os.sep + 'docs/wilber_painter.xbm')
+         except:
+            img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
             self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
 
 
@@ -271,6 +271,7 @@ class GuiBackup:
     def credits(self):
         rtk = Toplevel()
         rtk.wm_attributes('-topmost', 1)
+        self.create_icon()       
         n = ttk.Notebook(rtk)
         n.grid(row=0, column=0)
         frm1 = ttk.Frame(n)
@@ -597,7 +598,7 @@ class GuiBackup:
 
 def showlicense():
 
-    copyrightfile = 'docs/gpl-3.0.txt'
+    copyrightfile =  dir_name + os.sep +'docs/gpl-3.0.txt'
 
     root04 = Toplevel()
     root04.title(_('License...'))
