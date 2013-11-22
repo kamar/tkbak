@@ -26,7 +26,9 @@ import logging
 
 glossa = locale.getdefaultlocale()[0]
 
-t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallback=True, \
+dir_name = os.path.dirname(__file__)
+
+t = gettext.translation("tkbackup", localedir=dir_name + os.sep + "locale", codeset='utf-8', fallback=True, \
                         languages=[glossa])
 _ = t.gettext
 t.install()
@@ -66,7 +68,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
         zip_command = zipfile.ZipFile(target, mode)
 
         if len(addcom) > 0:
-            print(len(addcom))
+#             print(len(addcom))
             messagelog(_('Writing the comment: {0}').format(addcom))
             zip_command.comment = addcom.encode()
 #             messagelog(zip_command.comment.decode())

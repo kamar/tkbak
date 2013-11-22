@@ -33,7 +33,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory, asksaveasfilename
-#from tkinter import filedialog
 from tkinter.messagebox import askyesno, showinfo
 
 from backup import backup
@@ -74,7 +73,7 @@ class GuiBackup:
         self.title = title
         self.parent.title(self.title)
         self.parent.iconname('tkBackup')
-        self.create_icon()
+        self.create_icon(self.parent)
         self.maketoolbar()
         self.makewidgets()
         self.makebottomtoolbar()
@@ -84,13 +83,13 @@ class GuiBackup:
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
     
-    def create_icon(self):
+    def create_icon(self, p):
         #Try to set icon.
-         try:
-             self.parent.iconbitmap('@' + dir_name + os.sep + 'docs/wilber_painter.xbm')
-         except:
+        try:
+            p.iconbitmap('@' + dir_name + os.sep + 'docs/wilber_painter.xbm')
+        except:
             img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
-            self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
+            p.tk.call('wm', 'iconphoto', p._w, img)
 
 
     def center_window(self, afentiko):
@@ -99,6 +98,7 @@ class GuiBackup:
         sw = afentiko.winfo_screenwidth()
         sh = afentiko.winfo_screenheight()
         afentiko.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
+
 
     def maketoolbar(self):
         #st = ttk.Style()
@@ -132,6 +132,7 @@ class GuiBackup:
             toolbar.columnconfigure(x, weight=1)
         #for x in range(toolbar.grid_size()[1]-1):
         #    toolbar.rowconfigure(x,weight=1)
+
 
     def makebottomtoolbar(self):
         #st = ttk.Style()
@@ -265,14 +266,23 @@ class GuiBackup:
 
         self.parent.update_idletasks()
 
+
     def creditbind(self, event):
         self.credits()
+
 
     def credits(self):
         rtk = Toplevel()
         rtk.wm_attributes('-topmost', 1)
-        self.create_icon()       
-        n = ttk.Notebook(rtk)
+        self.rtk = rtk
+        self.create_icon(self.rtk)
+#         try:
+#             img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
+#             self.rtk.tk.call('wm', 'iconphoto', self.rtk._w, img)
+#         except:
+#             pass
+         
+        n = ttk.Notebook(self.rtk)
         n.grid(row=0, column=0)
         frm1 = ttk.Frame(n)
         frm1.grid()
@@ -305,16 +315,16 @@ class GuiBackup:
         lblperi.grid(sticky=ALL)
         lblperi['text'] = 'tkBackup {0}\n{1}'.format(open(dir_name + '/docs/VERSION').read(), _('Backup and Restore Application')) 
 
-        btnclose = ttk.Button(rtk, text=_('Close'), command=rtk.destroy)
+        btnclose = ttk.Button(self.rtk, text=_('Close'), command=rtk.destroy)
         btnclose.grid(row=1, column=0)
 
-        for child in rtk.winfo_children():
+        for child in self.rtk.winfo_children():
             child.grid_configure(pady=3, padx=3)
-        rtk.protocol("WM_DELETE_WINDOW", lambda: '')
-        rtk.resizable(0, 0)
-        rtk.update_idletasks()
-        self.center_window(rtk)
-        rtk.wait_window()
+        self.rtk.protocol("WM_DELETE_WINDOW", lambda: '')
+        self.rtk.resizable(0, 0)
+        self.rtk.update_idletasks()
+        self.center_window(self.rtk)
+        self.rtk.wait_window()
 
     def change_filename(self, file , expand=True):
         dirpath, filename = os.path.split(file)
@@ -650,6 +660,7 @@ class GuiRestore(GuiBackup):
         self.parent = parent
         self.title = title
         self.parent.title = self.title
+        self.create_icon(self.parent)
         self.lis = []
         self.minima = StringVar()
         self.sxolio = StringVar()
