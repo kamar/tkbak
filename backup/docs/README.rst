@@ -1,7 +1,6 @@
 ﻿=======================================
 tkBackup Backup and Restore Application 
 =======================================
-
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
 .. |date| date::
