@@ -34,7 +34,7 @@ t.install()
 
 logger = logging.getLogger('tkBackup Application')
 logger.setLevel(logging.INFO)
-log_file = 'tkbackup.log'
+log_file = os.path.expanduser('~') + os.sep + '.tkbackup.log'
 fh = logging.FileHandler(log_file, encoding='utf-8')
 fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
