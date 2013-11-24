@@ -1,0 +1,15 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[el_GR]=.gif
+Name[el_GR]=TkBackup
+Exec=python3 tkbak.py
+Comment[el_GR]=Πρόγραμμα Συμπίεσης και Δημιουργίας Αντιγράφων Ασφαλείας
+Name=TkBackup
+Comment=Application for backup and compressing files.
+Icon=
+GenericName[el_GR]=TkBackup
+Categories=Office;
+
