@@ -5,6 +5,9 @@ Created on 18-11-2013
 Updated on 25-11-2013
 @ author: Konstas Marmatakis
 '''
+
+import os
+import sys
 from distutils.core import setup
 from distutils.file_util import copy_file
 
@@ -38,6 +41,8 @@ setup(name='tkbackup',
                    'Topic :: Desktop Environment',
                    'Topic :: System :: Archiving :: Backup']
       )
-if os.name == 'posix':
-    copy_file('tkbackup.desktop', '/usr/share/applications/')
-    copy_file('tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
+
+if sys.argv[1] == '-install':
+    if os.name == 'posix':
+        copy_file('tkbackup.desktop', '/usr/share/applications/')
+        copy_file('backup/docs/tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
