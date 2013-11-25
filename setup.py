@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 '''
-Created on 18 Νοε 2013
-
-@author: Konstas
+Created on 18-11-2013
+Updated on 25-11-2013
+@ author: Konstas Marmatakis
 '''
 from distutils.core import setup
+from distutils.file_util import copy_file
 
 files = ['docs/*', 'locale/el_GR/LC_MESSAGES/*']
+
 
 setup(name='tkbackup',
       version=open('backup/docs/VERSION').read().strip(),
@@ -36,3 +38,6 @@ setup(name='tkbackup',
                    'Topic :: Desktop Environment',
                    'Topic :: System :: Archiving :: Backup']
       )
+if os.name == 'posix':
+    copy_file('tkbackup.desktop', '/usr/share/applications/')
+    copy_file('tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
