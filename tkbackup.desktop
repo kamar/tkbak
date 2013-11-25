@@ -6,10 +6,11 @@ Terminal=false
 Icon[el_GR]=.gif
 Name[el_GR]=TkBackup
 Exec=python3 tkbak.py
+Comment=Application for zip and archive files and directories.
 Comment[el_GR]=Πρόγραμμα Συμπίεσης και Δημιουργίας Αντιγράφων Ασφαλείας
 Name=TkBackup
 Comment=Application for backup and compressing files.
-Icon=
+Icon=/usr/share/icons/tkbackup.png
 GenericName[el_GR]=TkBackup
-Categories=Office;
-
+Categories=Office;Utility;
+Terminal=false
