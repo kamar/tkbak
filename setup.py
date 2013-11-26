@@ -42,7 +42,7 @@ setup(name='tkbackup',
                    'Topic :: System :: Archiving :: Backup']
       )
 
-if sys.argv[1] == '-install':
+if sys.argv[1] == 'install':
     if os.name == 'posix':
         copy_file('tkbackup.desktop', '/usr/share/applications/')
         copy_file('backup/docs/tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
