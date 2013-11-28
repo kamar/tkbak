@@ -53,4 +53,9 @@ The application has these features:
 
 - Save the source files and directories for repeating the former tasks.
 
+Languages
+---------
 
+Greek
+English
+If you want to translate in your language, please contact with me.
