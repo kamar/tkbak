@@ -56,6 +56,7 @@ The application has these features:
 Languages
 ---------
 
-Greek
-English
+ - Greek
+ - English
+
 If you want to translate in your language, please contact with me.
