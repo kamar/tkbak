@@ -1,6 +1,7 @@
 ﻿=======================================
 tkBackup Backup and Restore Application 
 =======================================
+
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
 .. |date| date::
@@ -34,12 +35,12 @@ How to start
 On a terminal just type:
 
 - cd tkbackup
-- python3 tkbackup.py or chmod +x tkbackup.py and ./tkbackup.py for linux users.
+- python3 tkbak.py or chmod +x tkbak.py and ./tkbak.py for linux users.
 
-- python tkbackup.py for windows users.
+- python tkbak.py for windows users.
 
 On graphical enviroment (windows and linux):
-    click or double click on the file tkbackup.py
+    click or double click on the file tkbak.py
 
 
 Manual
