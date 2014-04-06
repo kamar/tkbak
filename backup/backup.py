@@ -65,7 +65,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
 
     if ftype == 'typezip':
 
-        zip_command = zipfile.ZipFile(target, mode)
+        zip_command = zipfile.ZipFile(target, mode, compression=zipfile.ZIP_DEFLATED)
 
         if len(addcom) > 0:
 #             print(len(addcom))
