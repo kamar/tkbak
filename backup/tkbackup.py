@@ -448,6 +448,8 @@ class GuiBackup:
         #self.parent.deiconify()
         
     def loadme(self):
+        """ Loads recent files and directories."""
+        
         if askyesno(parent=self.parent, title=self.title, message=_('May I load the previous saved source files and directories?'), default='yes') == True:
             p = self.create_dirs()
             self.loadbtn['state'] = DISABLED
@@ -460,8 +462,12 @@ class GuiBackup:
                     l1 = text.split('\n')
 
                     for item in l1:
-                        self.lboxfiles.insert(END, item)
-                        self.lis.append(item)
+                        if os.path.exists(item):
+                            self.lboxfiles.insert(END, item)
+                            self.lis.append(item)
+                        else:
+                            self.write('\n')
+                            self.write(_('File {0} doesn\'t exists. Skip it.').format(item))
             except:
                 self.tex.insert(END, _('No saved source files.') +'\n')
                 self.tex.update()
@@ -478,8 +484,12 @@ class GuiBackup:
                     text1 = text1.lstrip('\n')
                     l2 = text1.split('\n')
                     for item in l2:
-                        self.lboxdirs.insert(END, item)
-                        self.lis.append(item)
+                        if os.path.exists(item):
+                            self.lboxdirs.insert(END, item)
+                            self.lis.append(item)
+                        else:
+                            self.write('\n')
+                            self.write(_('Directory {0} doesn\'t exists. Skip it.\n').format(item))
             except:
                 self.tex.insert(END, _('No saved source directories.') + '\n')
                 self.tex.update()
