@@ -33,7 +33,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory, asksaveasfilename
-#from tkinter import filedialog
 from tkinter.messagebox import askyesno, showinfo
 
 from backup import backup
@@ -43,9 +42,9 @@ ALL = N+S+E+W
 ##print(len(sys.argv), sys.argv[0])
 # print(sys.argv[0])
 # abspath = os.path.abspath(sys.argv[0])
-# dir_name = os.path.dirname(abspath)
-# print(dir_name)
+dir_name = os.path.dirname(__file__)
 # os.chdir(dir_name)
+# print(dir_name)
 
 
 glossa = locale.getdefaultlocale()[0]
@@ -56,7 +55,7 @@ print(glossa)
 ##    loc = locale.getlocale()
 ##    locale.setlocale(locale.LC_ALL, loc)
 
-t = gettext.translation("tkbackup", localedir="locale", codeset='utf-8', fallback=True, \
+t = gettext.translation("tkbackup", localedir=dir_name+os.sep+"locale", codeset='utf-8', fallback=True, \
                         languages=[glossa]) # t = Translation.
 _ = t.gettext
 t.install()
@@ -74,7 +73,7 @@ class GuiBackup:
         self.title = title
         self.parent.title(self.title)
         self.parent.iconname('tkBackup')
-        self.create_icon()
+        self.create_icon(self.parent)
         self.maketoolbar()
         self.makewidgets()
         self.makebottomtoolbar()
@@ -84,13 +83,13 @@ class GuiBackup:
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
     
-    def create_icon(self):
+    def create_icon(self, p):
         #Try to set icon.
         try:
-            self.parent.iconbitmap('@images/wilber_painter.xbm')
+            p.iconbitmap('@' + dir_name + os.sep + 'docs/wilber_painter.xbm')
         except:
-            img = PhotoImage(file='docs/tkbackup.gif')
-            self.parent.tk.call('wm', 'iconphoto', self.parent._w, img)
+            img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
+            p.tk.call('wm', 'iconphoto', p._w, img)
 
 
     def center_window(self, afentiko):
@@ -99,6 +98,7 @@ class GuiBackup:
         sw = afentiko.winfo_screenwidth()
         sh = afentiko.winfo_screenheight()
         afentiko.geometry("%dx%d%+d%+d" % (width, height, sw/2-width/2, sh/2-height/2))
+
 
     def maketoolbar(self):
         #st = ttk.Style()
@@ -132,6 +132,7 @@ class GuiBackup:
             toolbar.columnconfigure(x, weight=1)
         #for x in range(toolbar.grid_size()[1]-1):
         #    toolbar.rowconfigure(x,weight=1)
+
 
     def makebottomtoolbar(self):
         #st = ttk.Style()
@@ -265,13 +266,23 @@ class GuiBackup:
 
         self.parent.update_idletasks()
 
+
     def creditbind(self, event):
         self.credits()
+
 
     def credits(self):
         rtk = Toplevel()
         rtk.wm_attributes('-topmost', 1)
-        n = ttk.Notebook(rtk)
+        self.rtk = rtk
+        self.create_icon(self.rtk)
+#         try:
+#             img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
+#             self.rtk.tk.call('wm', 'iconphoto', self.rtk._w, img)
+#         except:
+#             pass
+         
+        n = ttk.Notebook(self.rtk)
         n.grid(row=0, column=0)
         frm1 = ttk.Frame(n)
         frm1.grid()
@@ -290,11 +301,11 @@ class GuiBackup:
 
         txtauthors = Text(frm1, width=45, height=10, bg='black', fg='green')
         txtauthors.grid()
-        txtauthors.insert(END, open('AUTHORS').read())
+        txtauthors.insert(END, open(dir_name + '/docs/AUTHORS').read())
         txtauthors['state'] = DISABLED
 
         txttranslators = Text(frm2, width=45, height=10, bg='black', fg='green')
-        txttranslators.insert(END,  open('TRANSLATORS').read())
+        txttranslators.insert(END,  open(dir_name + '/docs/TRANSLATORS').read())
         txttranslators.grid()
         txttranslators['state'] = DISABLED
 
@@ -302,18 +313,18 @@ class GuiBackup:
         style.configure("f.TLabel", font=('Arial', 14, 'bold'), foreground='green', background='black', justify=CENTER)
         lblperi = ttk.Label(frm3, anchor=CENTER, style="f.TLabel")
         lblperi.grid(sticky=ALL)
-        lblperi['text'] = 'tkBackup {0}\n{1}'.format(open('VERSION').read(), _('Backup and Restore Application')) 
+        lblperi['text'] = 'tkBackup {0}\n{1}'.format(open(dir_name + '/docs/VERSION').read(), _('Backup and Restore Application')) 
 
-        btnclose = ttk.Button(rtk, text=_('Close'), command=rtk.destroy)
+        btnclose = ttk.Button(self.rtk, text=_('Close'), command=rtk.destroy)
         btnclose.grid(row=1, column=0)
 
-        for child in rtk.winfo_children():
+        for child in self.rtk.winfo_children():
             child.grid_configure(pady=3, padx=3)
-        rtk.protocol("WM_DELETE_WINDOW", lambda: '')
-        rtk.resizable(0, 0)
-        rtk.update_idletasks()
-        self.center_window(rtk)
-        rtk.wait_window()
+        self.rtk.protocol("WM_DELETE_WINDOW", lambda: '')
+        self.rtk.resizable(0, 0)
+        self.rtk.update_idletasks()
+        self.center_window(self.rtk)
+        self.rtk.wait_window()
 
     def change_filename(self, file , expand=True):
         dirpath, filename = os.path.split(file)
@@ -597,7 +608,7 @@ class GuiBackup:
 
 def showlicense():
 
-    copyrightfile = 'docs/gpl-3.0.txt'
+    copyrightfile =  dir_name + os.sep +'docs/gpl-3.0.txt'
 
     root04 = Toplevel()
     root04.title(_('License...'))
@@ -649,6 +660,7 @@ class GuiRestore(GuiBackup):
         self.parent = parent
         self.title = title
         self.parent.title = self.title
+        self.create_icon(self.parent)
         self.lis = []
         self.minima = StringVar()
         self.sxolio = StringVar()
@@ -785,10 +797,12 @@ class GuiRestore(GuiBackup):
 #         self.myzip.close()
         self.btnextract['state'] = DISABLED
 
-
-if __name__=='__main__':
-
+    
+def run():
     root = Tk()
     GuiBackup(root)
- 
     root.mainloop()
+    
+        
+if __name__=='__main__':
+    run()

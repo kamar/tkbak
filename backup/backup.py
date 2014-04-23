@@ -24,6 +24,7 @@ import time
 import sys
 import logging
 
+
 glossa = locale.getdefaultlocale()[0]
 
 dir_name = os.path.dirname(__file__)
@@ -34,9 +35,22 @@ _ = t.gettext
 t.install()
 
 
+
+def create_dirs():
+    if sys.platform.startswith('win') or sys.platform.endswith('NT'):
+        the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbackup')
+    else:
+        the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbackup')
+    
+    if not os.path.exists(the_path):
+        os.mkdir(the_path)
+    return the_path
+
+
+logdir = create_dirs()
 logger = logging.getLogger('tkBackup Application')
 logger.setLevel(logging.INFO)
-log_file = os.path.expanduser('~') + os.sep + '.tkbackup.log'
+log_file = os.path.join(logdir, '.tkbackup.log')
 fh = logging.FileHandler(log_file, encoding='utf-8')
 fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
@@ -46,6 +60,7 @@ schand = logging.StreamHandler(sys.stdout)
 schand.setLevel(logging.INFO)
 schand.setFormatter(formatter)
 logger.addHandler(schand)
+
 
 
 def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', addcom=''):
