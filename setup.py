@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 '''
 Created on 18-11-2013
-Updated on 25-11-2013
+Updated on 24-04-2014
 @ author: Konstas Marmatakis
 '''
 
@@ -21,7 +21,7 @@ setup(name='tkbackup',
       author_email='marmako@gmail.com',
       url='https://bitbucket.org/kamar/tkbackup',
       packages=['backup'],
-      scripts=['tkbak.py', 'cr_shortcut.py'],
+      scripts=['tkbak', 'cr_shortcut.py'],
       package_data = {'backup': files},
       license='GNU/GPLv3',
 #       data_files=[('docs', ['docs/gpl-3.0.txt', 'AUTHORS', 'README.rst', 'TRANSLATORS', 'VERSION']),
