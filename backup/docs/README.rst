@@ -35,9 +35,14 @@ How to start
 On a terminal just type:
 
 - cd tkbackup
-- python3 tkbak.py or chmod +x tkbak.py and ./tkbak.py for linux users.
+- python3 tkbak or chmod +x tkbak and ./tkbak for linux users.
 
-- python tkbak.py for windows users.
+- python tkbak for windows users.
+
+Beta
+----
+There is installer for windows and linux but not fully tested.
+You can use it but with your own risk.
 
 On graphical enviroment (windows and linux):
     click or double click on the file tkbak.py
