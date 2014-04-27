@@ -1,12 +1,13 @@
-﻿=======================================
-tkBackup Backup and Restore Application 
+﻿
+=======================================
+tkBackup Backup and Restore Application
 =======================================
 
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
 .. |date| date::
 
-:Date: |date|
+:Date: 2014-04-26
 :Description: This is an application for backup and restore files.
 :Requirements: Requirements
 :INSTALL: Installation
@@ -45,7 +46,7 @@ There is installer for windows and linux but not fully tested.
 You can use it but with your own risk.
 
 On graphical enviroment (windows and linux):
-    click or double click on the file tkbak.py
+    click or double click on the file tkbak.
 
 
 Manual

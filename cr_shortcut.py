@@ -4,28 +4,35 @@
 
 import os
 import sys
-import shutil
-import tkbackup
 
-DESKTOP_FOLDER = get_special_folder_path("CSIDL_DESKTOPDIRECTORY")
-NAME = 'tkbackup.lnk'
+import distutils.sysconfig
 
 if sys.argv[1] == '-install':
-    create_shortcut(
-        os.path.join(sys.prefix, 'python.exe'), # program
-        'TkBackup', # description
-        NAME, # filename
-        tkbackup.__file__, # parameters
-        '', # workdir
-        os.path.join(os.path.dirname(tkbackup.__file__), 'docs/tkbackup.ico'), # iconpath
-    )
-    # move shortcut from current directory to DESKTOP_FOLDER
-    shutil.move(os.path.join(os.getcwd(), NAME),
-                os.path.join(DESKTOP_FOLDER, NAME))
-    # tell windows installer that we created another
-    # file which should be deleted on uninstallation
-    file_created(os.path.join(DESKTOP_FOLDER, NAME))
+    
+    os.rename(os.path.join(sys.prefix, 'Scripts', 'tkbak'),
+          os.path.join(sys.prefix, 'Scripts', 'tkbak.py'))
+    file_created(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'))
+    copy_file('backup/docs/tkbackup.ico', os.path.join(distutils.sysconfig.get_python_lib(), 'docs'))
+    file_created(os.path.join(distutils.sysconfig.get_python_lib(), 'docs','tkbackup.ico'))
+                 
+    desktop = get_special_folder_path("CSIDL_COMMON_DESKTOPDIRECTORY")
+    startmenu = get_special_folder_path("CSIDL_COMMON_STARTMENU")
 
-if sys.argv[1] == '-remove':
-    pass
-    # This will be run on uninstallation. Nothing to do.
+    create_shortcut(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'),
+                "Application for zip and archive files and directories.",
+                os.path.join(desktop, 'TkBackup.lnk'),
+                '', '',
+                os.path.join(distutils.sysconfig.get_python_lib(), 'docs', 'tkbackup.ico'))
+    file_created(os.path.join(desktop, 'TkBackup.lnk'))
+
+    create_shortcut(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'),
+                "Application for zip and archive files and directories.",
+                os.path.join(startmenu, 'TkBackup.lnk'),
+                '', '',
+                os.path.join(distutils.sysconfig.get_python_lib(), 'docs', 'tkbackup.ico'))
+    file_created(os.path.join(startmenu, 'TkBackup.lnk'))
+
+
+    
+
+

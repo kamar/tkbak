@@ -36,6 +36,7 @@ from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory,
 from tkinter.messagebox import askyesno, showinfo
 
 from backup import backup
+from backup.backup import create_dirs
 
 ALL = N+S+E+W
 
@@ -79,10 +80,11 @@ class GuiBackup:
         self.makebottomtoolbar()
         self.parent.update_idletasks()
         self.center_window(self.parent)
-
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
-    
+       # self.read_project()
+        
+        
     def create_icon(self, p):
         #Try to set icon.
         try:
@@ -115,15 +117,25 @@ class GuiBackup:
         btnlisf.grid(row=0, column=0, sticky=E)
         self.btnlisf = btnlisf
         
+        btncreat_project = ttk.Button(toolbar, text=_('Create Project File'), command=self.create_project)
+        btncreat_project.grid(row=0, column=1)
+        self.btncret_project = btncreat_project
+        self.btncret_project['state'] = DISABLED
+        
+        btnload_project = ttk.Button(toolbar, text=_('Load Project File'), command=self.read_project)
+        btnload_project.grid(row=0, column=2)
+        self.btnload_project = btnload_project
+        self.btnload_project['state'] = DISABLED
+        
         btnlisd = ttk.Button(toolbar, text=_('Add Directories'), command=lambda: self.appendlis(2))
-        btnlisd.grid(row=0, column=2, sticky=W)
+        btnlisd.grid(row=0, column=3, sticky=W)
         self.btnlisd = btnlisd
         
         btncopyr = ttk.Button(toolbar, text=_('License...'), command=showlicense)
-        btncopyr.grid(row=0, column=2, sticky=E)
+        btncopyr.grid(row=0, column=3, sticky=E)
         
         btnmnia = ttk.Button(toolbar, text=_('Credits'), command=self.credits)
-        btnmnia.grid(row=0, column=3, sticky=E)
+        btnmnia.grid(row=0, column=4, sticky=E)
     
         for child in toolbar.winfo_children():
             child.grid_configure(pady=4, padx=4)
@@ -266,6 +278,52 @@ class GuiBackup:
 
         self.parent.update_idletasks()
 
+    def create_project(self):
+        """Creates a project file that includes
+        directories and files. Easy to remember easy to use.
+        """
+        import dbm
+        the_path = os.path.join(create_dirs(), 'projects')
+        
+        if not os.path.exists(the_path):
+            os.mkdir(the_path)
+            
+        p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project')
+        print(os.path.normpath(p))
+        project = dbm.open(os.path.normpath(p), 'c')
+        l = ''
+        for item in self.lboxdirs.get(0, END):
+            l = l + ' ' + item 
+        project['directories'] = l
+        l = ''
+        for item in self.lboxfiles.get(0, END):
+            l = l + ' ' + item
+        project['files'] = l
+        
+        print(project.get('directories'))
+        print(project.get('files'))
+        project.close()
+        
+    def read_project(self):
+        import dbm
+        
+        ft = [('tkbackup files', '.dat'),
+              ('All Files', '*')]
+
+        p = askopenfilename(parent=self.parent, initialdir=os.path.join(create_dirs(), 'projects'), \
+                              title=self.title, filetypes=ft)
+        p = p[-4:]
+        project = dbm.open(os.path.normpath(p), 'w')
+        
+        dirs = project['directories'].decode()
+        for di in dirs.strip().split():
+            print(di)
+        
+        fils = project['files'].decode()
+        for fi in fils.strip().split():
+            print(fi)
+        
+        project.close()
 
     def creditbind(self, event):
         self.credits()
@@ -600,6 +658,7 @@ class GuiBackup:
                     pass
                 finally:
                     fp.close()
+        #self.create_project()
 
         self.write( _('The End.'))
         self.write( '\n')
