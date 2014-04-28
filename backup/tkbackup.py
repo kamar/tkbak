@@ -71,6 +71,8 @@ class GuiBackup:
         self.minima = StringVar()
         self.typefile = StringVar()
         self.filemode = StringVar()
+        self.project_name = StringVar()
+        self.project_loaded = False
         self.title = title
         self.parent.title(self.title)
         self.parent.iconname('tkBackup')
@@ -82,9 +84,8 @@ class GuiBackup:
         self.center_window(self.parent)
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
-       # self.read_project()
-        
-        
+   
+   
     def create_icon(self, p):
         #Try to set icon.
         try:
@@ -113,19 +114,19 @@ class GuiBackup:
         loadbtn.grid(row=0, column=0, sticky=W)
         self.loadbtn = loadbtn
         
-        btnlisf = ttk.Button(toolbar, text=_('Add Files'), command=lambda: self.appendlis())
-        btnlisf.grid(row=0, column=0, sticky=E)
-        self.btnlisf = btnlisf
-        
         btncreat_project = ttk.Button(toolbar, text=_('Create Project File'), command=self.create_project)
-        btncreat_project.grid(row=0, column=1)
+        btncreat_project.grid(row=0, column=0, sticky=E)
         self.btncret_project = btncreat_project
-        self.btncret_project['state'] = DISABLED
+#         self.btncret_project['state'] = DISABLED
         
         btnload_project = ttk.Button(toolbar, text=_('Load Project File'), command=self.read_project)
-        btnload_project.grid(row=0, column=2)
+        btnload_project.grid(row=0, column=1, sticky=W)
         self.btnload_project = btnload_project
-        self.btnload_project['state'] = DISABLED
+#         self.btnload_project['state'] = DISABLED
+        
+        btnlisf = ttk.Button(toolbar, text=_('Add Files'), command=lambda: self.appendlis())
+        btnlisf.grid(row=0, column=2, sticky=E)
+        self.btnlisf = btnlisf
         
         btnlisd = ttk.Button(toolbar, text=_('Add Directories'), command=lambda: self.appendlis(2))
         btnlisd.grid(row=0, column=3, sticky=W)
@@ -278,7 +279,7 @@ class GuiBackup:
 
         self.parent.update_idletasks()
 
-    def create_project(self):
+    def create_project(self, proj_name=''):
         """Creates a project file that includes
         directories and files. Easy to remember easy to use.
         """
@@ -287,10 +288,14 @@ class GuiBackup:
         
         if not os.path.exists(the_path):
             os.mkdir(the_path)
-            
-        p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project')
-        print(os.path.normpath(p))
-        project = dbm.open(os.path.normpath(p), 'c')
+        if proj_name == None or proj_name == '':
+            p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project')
+            project = dbm.open(os.path.normpath(p), 'c')
+        else:
+            p = proj_name
+            project = dbm.open(os.path.normpath(p), 'w')
+#         print(os.path.normpath(p))
+        
         l = ''
         for item in self.lboxdirs.get(0, END):
             l = l + ' ' + item 
@@ -299,30 +304,42 @@ class GuiBackup:
         for item in self.lboxfiles.get(0, END):
             l = l + ' ' + item
         project['files'] = l
+        project['compressed_file'] = self.ent.get()
         
         print(project.get('directories'))
         print(project.get('files'))
+        print(project.get('compressed_file'))
         project.close()
         
     def read_project(self):
         import dbm
-        
+        self.lis = self.lis[:]
         ft = [('tkbackup files', '.dat'),
               ('All Files', '*')]
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.join(create_dirs(), 'projects'), \
                               title=self.title, filetypes=ft)
-        p = p[-4:]
+        
+        p = p[:-4]
+        
         project = dbm.open(os.path.normpath(p), 'w')
         
         dirs = project['directories'].decode()
         for di in dirs.strip().split():
-            print(di)
+            if os.path.exists(di):
+                self.lboxdirs.insert(END, di)
+                self.lis.append(di)
+            
         
         fils = project['files'].decode()
         for fi in fils.strip().split():
-            print(fi)
-        
+            self.lboxfiles.insert(END, fi)
+            self.lis.append(fi)
+            
+        self.ent.delete(0, END)
+        self.ent.insert(0, project['compressed_file'] )
+        self.project_name = p
+        self.project_loaded = True
         project.close()
 
     def creditbind(self, event):
@@ -658,6 +675,9 @@ class GuiBackup:
                     pass
                 finally:
                     fp.close()
+        if self.project_loaded:
+            self.create_project(self.project_name)
+            
         #self.create_project()
 
         self.write( _('The End.'))
