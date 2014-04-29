@@ -1,3 +1,8 @@
+2014-04-29 Konstas Marmatakis marmako@gmail.com
+	* setup.py: Improvments.
+	* cr_shortcut.py: Finished.
+	* Windows intaller: Ready.
+
 2014-04-28 Konstas Marmatakis marmako@gmail.com
 
 	* tkbackup.py: Added the ability to create prject file.
