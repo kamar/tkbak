@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 18-11-2013
-Updated on 26-04-2014
+Updated on 29-04-2014
 @ author: Konstas Marmatakis
 '''
 
@@ -22,7 +22,7 @@ setup(name='tkbackup',
       author_email='marmako@gmail.com',
       url='https://bitbucket.org/kamar/tkbackup',
       packages=['backup'],
-      scripts=['tkbak', 'cr_shortcut.py', 'postinstall.py'],
+      scripts=['tkbak', 'cr_shortcut.py'],
       package_data = {'backup': files},
       license='GNU/GPLv3',
 #       data_files=[('docs', ['docs/gpl-3.0.txt', 'AUTHORS', 'README.rst', 'TRANSLATORS', 'VERSION']),
@@ -66,27 +66,3 @@ if sys.argv[1] == 'install':
             print('Error. Can\'t create {0}'.format(os.path.join('/usr/share/applications/', 'tkbackup.desktop')))
         finally:
             fh.close()
-##    else:
-##        os.rename(os.path.join(sys.prefix, 'Scripts', 'tkbak'),
-##              os.path.join(sys.prefix, 'Scripts', 'tkbak.py'))
-##        file_created(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'))
-##        copy_file('backup/docs/tkbackup.ico', os.path.join(sys.prefix, 'Icons'))
-##        file_created(os.path.join(sys.prefix, 'Icons', 'tkbackup.ico'))
-##                     
-##        desktop = get_special_folder_path("CSIDL_COMMON_DESKTOPDIRECTORY")
-##        startmenu = get_special_folder_path("CSIDL_COMMON_STARTMENU")
-##
-##        create_shortcut(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'),
-##                    "Application for zip and archive files and directories.",
-##                    os.path.join(desktop, 'TkBackup.lnk'),
-##                    '', '',
-##                    os.path.join(sys.prefix, 'Icons', 'tkbackup.ico'))
-##        file_created(os.path.join(desktop, 'TkBackup.lnk'))
-##
-##        create_shortcut(os.path.join(sys.prefix, 'Scripts', 'tkbak.py'),
-##                    "Application for zip and archive files and directories.",
-##                    os.path.join(startmenu, 'TkBackup.lnk'),
-##                    '', '',
-##                    os.path.join(sys.prefix, 'Icons', 'tkbackup.ico'))
-##        file_created(os.path.join(startmenu, 'TkBackup.lnk'))
-        
