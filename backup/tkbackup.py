@@ -115,28 +115,28 @@ class GuiBackup:
         self.loadbtn = loadbtn
         
         btncreat_project = ttk.Button(toolbar, text=_('Create Project File'), command=self.create_project)
-        btncreat_project.grid(row=0, column=0, sticky=E)
+        btncreat_project.grid(row=0, column=1)
         self.btncret_project = btncreat_project
 #         self.btncret_project['state'] = DISABLED
         
         btnload_project = ttk.Button(toolbar, text=_('Load Project File'), command=self.read_project)
-        btnload_project.grid(row=0, column=1, sticky=W)
+        btnload_project.grid(row=0, column=2)
         self.btnload_project = btnload_project
 #         self.btnload_project['state'] = DISABLED
         
         btnlisf = ttk.Button(toolbar, text=_('Add Files'), command=lambda: self.appendlis())
-        btnlisf.grid(row=0, column=2, sticky=E)
+        btnlisf.grid(row=0, column=3)
         self.btnlisf = btnlisf
         
         btnlisd = ttk.Button(toolbar, text=_('Add Directories'), command=lambda: self.appendlis(2))
-        btnlisd.grid(row=0, column=3, sticky=W)
+        btnlisd.grid(row=0, column=4)
         self.btnlisd = btnlisd
         
         btncopyr = ttk.Button(toolbar, text=_('License...'), command=showlicense)
-        btncopyr.grid(row=0, column=3, sticky=E)
+        btncopyr.grid(row=0, column=5)
         
         btnmnia = ttk.Button(toolbar, text=_('Credits'), command=self.credits)
-        btnmnia.grid(row=0, column=4, sticky=E)
+        btnmnia.grid(row=0, column=6)
     
         for child in toolbar.winfo_children():
             child.grid_configure(pady=4, padx=4)
@@ -290,41 +290,47 @@ class GuiBackup:
             os.mkdir(the_path)
         if proj_name == None or proj_name == '':
             p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project')
+
             project = dbm.open(os.path.normpath(p), 'c')
         else:
             p = proj_name
+
             project = dbm.open(os.path.normpath(p), 'w')
 #         print(os.path.normpath(p))
         
         l = ''
+     #   self.lboxdirs.delete(0, END)
         for item in self.lboxdirs.get(0, END):
             l = l + ' ' + item 
         project['directories'] = l
         l = ''
+      #  self.lboxfiles.delete(0, END)
         for item in self.lboxfiles.get(0, END):
             l = l + ' ' + item
         project['files'] = l
         project['compressed_file'] = self.ent.get()
         
-        print(project.get('directories'))
-        print(project.get('files'))
-        print(project.get('compressed_file'))
         project.close()
         
     def read_project(self):
         import dbm
         self.lis = self.lis[:]
         ft = [('tkbackup files', '.dat'),
+              ('tkbackup files', '.db'),
               ('All Files', '*')]
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.join(create_dirs(), 'projects'), \
                               title=self.title, filetypes=ft)
         
-        p = p[:-4]
+        if not p or len(p) == 0:
+            return
+        p = os.path.splitext(p)[0]
         
         project = dbm.open(os.path.normpath(p), 'w')
         
         dirs = project['directories'].decode()
+        self.lboxfiles.delete(0, END)
+
         for di in dirs.strip().split():
             if os.path.exists(di):
                 self.lboxdirs.insert(END, di)
@@ -332,6 +338,7 @@ class GuiBackup:
             
         
         fils = project['files'].decode()
+        self.lboxfiles.delete(0, END)
         for fi in fils.strip().split():
             self.lboxfiles.insert(END, fi)
             self.lis.append(fi)

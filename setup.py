@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''
-Created on 18-11-2013=
+Created on 18-11-2013
 Updated on 29-04-2014
 @ author: Konstas Marmatakis
 '''
@@ -9,7 +9,6 @@ Updated on 29-04-2014
 import os
 import sys
 from distutils.core import setup
-from distutils.sysconfig import EXEC_PREFIX
 from distutils.file_util import copy_file
 
 files = ['docs/*', 'locale/el_GR/LC_MESSAGES/*']
