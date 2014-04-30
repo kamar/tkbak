@@ -337,7 +337,11 @@ class GuiBackup:
             self.lis.append(fi)
             
         self.ent.delete(0, END)
-        self.ent.insert(0, project['compressed_file'] )
+        try:
+            self.ent.insert(0, project['compressed_file'] )
+        except:
+            pass
+        
         self.project_name = p
         self.project_loaded = True
         project.close()

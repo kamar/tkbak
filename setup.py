@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''
-Created on 18-11-2013
+Created on 18-11-2013=
 Updated on 29-04-2014
 @ author: Konstas Marmatakis
 '''
@@ -13,7 +13,6 @@ from distutils.sysconfig import EXEC_PREFIX
 from distutils.file_util import copy_file
 
 files = ['docs/*', 'locale/el_GR/LC_MESSAGES/*']
-
 
 setup(name='tkbackup',
       version=open('backup/docs/VERSION').read().strip(),
@@ -29,7 +28,8 @@ setup(name='tkbackup',
 #                   ('images', ['docs/gplv3-127x51.gif', 'docs/gplv3-127x51.png',
 #                               'docs/gplv3-88x31.gif', 'docs/gplv3-88x31.png', 
 #                               'docs/tkbackup.gif', 'docs/tkbackup.png'])],
-      long_description="""This is an application for backup, compress and restore files. """,#open('backup/docs/README.rst', encoding='utf-8').read(),
+      long_description=open('backup/docs/README.rst', encoding='utf-8').read().replace('\ufeff', ''),
+      platforms=['Linux', 'Windows'],
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: X11 Applications',
                    'Intended Audience :: Other Audience',
@@ -44,15 +44,23 @@ setup(name='tkbackup',
 
 if sys.argv[1] == 'install':
     if os.name == 'posix':
+        ins_dir = ''
         try:
-            locations = open('RECORD', encoding='utf-8').read()
-            # print(locations)
-            for line in locations.splitlines():
-                if line[-5:] == 'tkbak':
-                    executable = line
+            if os.path.exists(os.path.join('/usr/bin', 'tkbak')):
+                ins_dir = '/usr/bin'
+            elif os.path.exists(os.path.join('/usr/local/bin', 'tkbak')):
+                ins_dir = '/usr/local/bin'
         except:
-            print('Can\'t read the location from the script.')                            
-            locations='/usr/bin'
+            pass
+#         try:
+#             locations = open('RECORD', encoding='utf-8').read()
+#             # print(locations)
+#             for line in locations.splitlines():
+#                 if line[-5:] == 'tkbak':
+#                     executable = line
+#         except:
+#             print('Can\'t read the location from the script.')                            
+#             locations='/usr/bin'
     
         txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
         # copy_file('tkbackup.desktop', '/usr/share/applications/')
@@ -60,7 +68,7 @@ if sys.argv[1] == 'install':
         try:
             print('Writing {0} ...'.format(os.path.join('/usr/share/applications', 'tkbackup.desktop')))
             fh = open(os.path.join('/usr/share/applications/', 'tkbackup.desktop'), 'w', encoding='utf-8')
-            fh.write(txt.format((executable or os.path.join(EXEC_PREFIX, 'bin', 'tkbak')), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbackup.png')))
+            fh.write(txt.format(os.path.join(ins_dir, 'tkbak'), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbackup.png')))
             fh.close()
         except:
             print('Error. Can\'t create {0}'.format(os.path.join('/usr/share/applications/', 'tkbackup.desktop')))
