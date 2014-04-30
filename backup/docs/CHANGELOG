@@ -1,9 +1,16 @@
+2014-04-30 Konstas Marmatakis marmako@gmail.com
+
+	* setup.py: Improvements.
+	* tkbackup.py: Bug fixing with opening project files, Gui.
+	* Windows installer: 
+
 2014-04-29 Konstas Marmatakis marmako@gmail.com
-	* setup.py: Improvments.
+	
+	* setup.py: Improvements.
 	* cr_shortcut.py: Finished.
-	* Windows intaller: Ready.
+	* Windows installer: Ready.
 
 2014-04-28 Konstas Marmatakis marmako@gmail.com
 
-	* tkbackup.py: Added the ability to create prject file.
+	* tkbackup.py: Added the ability to create project file.
 	* tkbackup.py: Improvements.
