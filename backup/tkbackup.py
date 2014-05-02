@@ -284,33 +284,37 @@ class GuiBackup:
         directories and files. Easy to remember easy to use.
         """
         import dbm
+        
         the_path = os.path.join(create_dirs(), 'projects')
+        
+        ft = [('tkbackup files', '.dat'),
+              ('tkbackup files', '.db'),
+              ('All Files', '*')]
         
         if not os.path.exists(the_path):
             os.mkdir(the_path)
         if proj_name == None or proj_name == '':
-            p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project')
-
+            p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project', filetypes=ft)
+            p = os.path.splitext(p)[0]
             project = dbm.open(os.path.normpath(p), 'c')
         else:
             p = proj_name
-
+            p = os.path.splitext(p)[0]
             project = dbm.open(os.path.normpath(p), 'w')
-#         print(os.path.normpath(p))
         
         l = ''
-     #   self.lboxdirs.delete(0, END)
         for item in self.lboxdirs.get(0, END):
             l = l + ' ' + item 
         project['directories'] = l
+        
         l = ''
-      #  self.lboxfiles.delete(0, END)
         for item in self.lboxfiles.get(0, END):
             l = l + ' ' + item
         project['files'] = l
         project['compressed_file'] = self.ent.get()
-        
+        project.sync()
         project.close()
+        self.msg.set(_('Project saved: {0}').format(p))
         
     def read_project(self):
         import dbm
@@ -350,6 +354,7 @@ class GuiBackup:
             pass
         
         self.project_name = p
+        self.msg.set(_('Loaded project: {0}').format(self.project_name))
         self.project_loaded = True
         project.close()
 
