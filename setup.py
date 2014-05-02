@@ -11,7 +11,7 @@ import sys
 from distutils.core import setup
 from distutils.file_util import copy_file
 
-files = ['docs/*', 'locale/el_GR/LC_MESSAGES/*']
+files = ['docs/*', 'locale/*/LC_MESSAGES/*']
 
 setup(name='tkbackup',
       version=open('backup/docs/VERSION').read().strip(),
