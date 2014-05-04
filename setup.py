@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 18-11-2013
-Updated on 29-04-2014
+Updated on 04-05-2014
 @ author: Konstas Marmatakis
 '''
 
@@ -11,8 +11,33 @@ import sys
 from distutils.core import setup
 from distutils.file_util import copy_file
 
-files = ['docs/*', 'locale/*/LC_MESSAGES/*']
+if (sys.version_info.major, sys.version_info.minor) < (3, 2):
+    print("You must have version 3.2 and above.")
+    sys.exit(1)
 
+
+files = ['docs/*', 'locale/*/LC_MESSAGES/*']
+dat_files = []
+
+
+if os.name == 'posix':
+    ins_dir = '/usr/local/bin'
+    try:
+        if os.path.exists(os.path.join('/usr/bin', 'tkbak')):
+            ins_dir = '/usr/bin'
+            
+        elif os.path.exists(os.path.join('/usr/local/bin', 'tkbak')):
+            ins_dir = '/usr/local/bin'
+    except:
+        pass
+    
+    txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
+    fh = open('tkbackup.desktop', 'w')
+    fh.write(txt.format(os.path.join(ins_dir, 'tkbak'), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbackup.png')))
+    fh.close()
+    dat_files = [('/usr/share/icons/hicolor/48x48/apps', ['backup/docs/tkbackup.png']),
+                 ('/usr/share/applications', ['tkbackup.desktop'])]
+    
 setup(name='tkbackup',
       version=open('backup/docs/VERSION').read().strip(),
       description='Simple Backup Program',
@@ -22,6 +47,7 @@ setup(name='tkbackup',
       packages=['backup'],
       scripts=['tkbak', 'cr_shortcut.py'],
       package_data = {'backup': files},
+      data_files = dat_files,
       license='GNU/GPLv3',
 #       data_files=[('docs', ['docs/gpl-3.0.txt', 'AUTHORS', 'README.rst', 'TRANSLATORS', 'VERSION']),
 #                   ('images', ['docs/gplv3-127x51.gif', 'docs/gplv3-127x51.png',
@@ -41,35 +67,48 @@ setup(name='tkbackup',
                    'Topic :: Desktop Environment',
                    'Topic :: System :: Archiving :: Backup'])
 
-if sys.argv[1] == 'install':
-    if os.name == 'posix':
-        ins_dir = ''
-        try:
-            if os.path.exists(os.path.join('/usr/bin', 'tkbak')):
-                ins_dir = '/usr/bin'
-            elif os.path.exists(os.path.join('/usr/local/bin', 'tkbak')):
-                ins_dir = '/usr/local/bin'
-        except:
-            pass
+# if sys.argv[1] == 'install':
+#     if os.name == 'posix':
+#         ins_dir = ''
 #         try:
-#             locations = open('RECORD', encoding='utf-8').read()
-#             # print(locations)
-#             for line in locations.splitlines():
-#                 if line[-5:] == 'tkbak':
-#                     executable = line
+#             if os.path.exists(os.path.join('/usr/bin', 'tkbak')):
+#                 ins_dir = '/usr/bin'
+#             elif os.path.exists(os.path.join('/usr/local/bin', 'tkbak')):
+#                 ins_dir = '/usr/local/bin'
 #         except:
-#             print('Can\'t read the location from the script.')                            
-#             locations='/usr/bin'
-    
-        txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
-        # copy_file('tkbackup.desktop', '/usr/share/applications/')
-        copy_file('backup/docs/tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
-        try:
-            print('Writing {0} ...'.format(os.path.join('/usr/share/applications', 'tkbackup.desktop')))
-            fh = open(os.path.join('/usr/share/applications/', 'tkbackup.desktop'), 'w', encoding='utf-8')
-            fh.write(txt.format(os.path.join(ins_dir, 'tkbak'), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbackup.png')))
-            fh.close()
-        except:
-            print('Error. Can\'t create {0}'.format(os.path.join('/usr/share/applications/', 'tkbackup.desktop')))
-        finally:
-            fh.close()
+#             pass
+# #         try:
+# #             locations = open('RECORD', encoding='utf-8').read()
+# #             # print(locations)
+# #             for line in locations.splitlines():
+# #                 if line[-5:] == 'tkbak':
+# #                     executable = line
+# #         except:
+# #             print('Can\'t read the location from the script.')                            
+# #             locations='/usr/bin'
+#     
+#         txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
+#         # copy_file('tkbackup.desktop', '/usr/share/applications/')
+#         copy_file('backup/docs/tkbackup.png', '/usr/share/icons/hicolor/48x48/apps/')
+#         try:
+#             print('Writing {0} ...'.format(os.path.join('/usr/share/applications', 'tkbackup.desktop')))
+#             fh = open(os.path.join('/usr/share/applications/', 'tkbackup.desktop'), 'w', encoding='utf-8')
+#             fh.write(txt.format(os.path.join(ins_dir, 'tkbak'), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbackup.png')))
+#             fh.close()
+#         except:
+#             print('Error. Can\'t create {0}'.format(os.path.join('/usr/share/applications/', 'tkbackup.desktop')))
+#         finally:
+#             fh.close()
+# 
+#     elif sys.argv[1] in ["uninstall", "remove"]:
+#         png_loc = os.path.join('/usr/share/icons/hicolor/48x48/apps/', 'tkbackup.png')
+#         shortcut_loc = os.path.join('/usr/share/applications/', 'tkbackup.desktop')
+#         
+#         if os.path.exists(png_loc):
+#             print("Removing {0}...".format(png_loc))
+#             os.unlink(png_loc)
+#         
+#         if os.path.exists(shortcut_loc):
+#             print("Removing {0}...".format(shortcut_loc))
+#             os.unlink(shortcut_loc)
+#         

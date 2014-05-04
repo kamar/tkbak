@@ -56,7 +56,7 @@ print(glossa)
 ##    loc = locale.getlocale()
 ##    locale.setlocale(locale.LC_ALL, loc)
 
-t = gettext.translation("tkbackup", localedir=dir_name+os.sep+"locale", codeset='utf-8', fallback=True, \
+t = gettext.translation("tkbackup", localedir=os.path.join(dir_name, "locale"), codeset='utf-8', fallback=True, \
                         languages=[glossa]) # t = Translation.
 _ = t.gettext
 t.install()
@@ -214,6 +214,7 @@ class GuiBackup:
         lboxdirs.grid(row=0, column=0, stick=ALL)
         self.lboxdirs = lboxdirs
         self.lboxdirs.bind('<Double-1>', self.OnDouble)
+        self.lboxdirs.bind('<Button-3>', self.OnDouble)
         vsb = ttk.Scrollbar(lblfrm2, orient='vertical', command=self.lboxdirs.yview)
         self.lboxdirs.configure(yscrollcommand=vsb.set)
         vsb.grid(row=0, column=1, sticky=N+S)
@@ -356,6 +357,8 @@ class GuiBackup:
         self.project_name = p
         self.msg.set(_('Loaded project: {0}').format(self.project_name))
         self.project_loaded = True
+        self.btncret_project['state'] = DISABLED
+        self.btnload_project['state'] = DISABLED
         project.close()
 
     def creditbind(self, event):
@@ -462,12 +465,17 @@ class GuiBackup:
             self.btnlisd['state'] = DISABLED
             self.impfilebtn['state'] = DISABLED
             self.btnrestore['state'] = DISABLED
+            self.btncret_project['state'] = DISABLED
+            self.btnload_project['state'] = DISABLED
+            
         else:
             self.clsbtn['state'] = NORMAL
             self.btnlisf['state'] = NORMAL
             self.btnlisd['state'] = NORMAL
             self.impfilebtn['state'] = NORMAL
             self.btnrestore['state'] = NORMAL
+            self.btncret_project['state'] = NORMAL
+            self.btnload_project['state'] = NORMAL
 
     def add_comm(self, myzipfile, cc):
             if zipfile.is_zipfile(myzipfile):

@@ -1,5 +1,6 @@
 include README.rst
 include tkbak
+include tkbackup.desktop
 include cr_shortcut.py
 recursive-include backup/locale/*/LC_MESSAGES *
 recursive-include backup/docs *

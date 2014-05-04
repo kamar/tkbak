@@ -1,4 +1,8 @@
-2014- Konstas Marmatakis marmako@gmail.com
+2014-05-02 Konstas Marmatakis marmako@gmail.com
+	* setup.py: Improvements.
+	* tkbackup.desktop: Added.
+
+2014-05-02 Konstas Marmatakis marmako@gmail.com
 
 	* tkbackup.py: 
 		Added message on loading project. 
