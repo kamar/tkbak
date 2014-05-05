@@ -319,7 +319,7 @@ class GuiBackup:
         
     def read_project(self):
         import dbm
-        self.lis = self.lis[:]
+        self.lis[:] = []
         ft = [('tkbackup files', '.dat'),
               ('tkbackup files', '.db'),
               ('All Files', '*')]
@@ -359,6 +359,8 @@ class GuiBackup:
         self.project_loaded = True
         self.btncret_project['state'] = DISABLED
         self.btnload_project['state'] = DISABLED
+        self.loadbtn['state'] = DISABLED
+
         project.close()
 
     def creditbind(self, event):
@@ -518,8 +520,10 @@ class GuiBackup:
                 self.lis.remove(val)
                 pos += 1
          
-    def write(self, minima):
+    def write(self, minima, addend=False):
         self.tex.insert(2.0, minima)
+        if addend:
+            self.tex.insert(2.0,'\n')
         #self.tex.see(END)
         self.tex.update()
         try:
@@ -530,20 +534,25 @@ class GuiBackup:
 
     def appendlis(self, fileordir=1):
         #self.parent.withdraw()        
-        if fileordir == 1:
+        if fileordir == 1: # File
             p = askopenfilenames(initialdir=os.path.expanduser('~'))
             for itm in self.parent.tk.splitlist(p):
                 itm = os.path.normpath(itm)
                 if not itm in self.lis:
                     self.lis.append(itm)
                     self.lboxfiles.insert(END, itm)
-        
-        elif fileordir == 2:
+                else:
+                    self.write(_("The file {0} already exists in the list.").format(itm), True)
+                            
+        elif fileordir == 2: # Directories
             p = os.path.normpath(askdirectory( initialdir=os.path.expanduser('~')))
             if not p in self.lis:
                 p = os.path.normpath(p)
                 self.lis.append(p)
                 self.lboxdirs.insert(END, p)
+
+            else:
+                self.write(_("The directory {0} already exists in the list.").format(p), True)
         #self.parent.deiconify()
         
     def loadme(self):
@@ -552,6 +561,9 @@ class GuiBackup:
         if askyesno(parent=self.parent, title=self.title, message=_('May I load the previous saved source files and directories?'), default='yes') == True:
             p = self.create_dirs()
             self.loadbtn['state'] = DISABLED
+            self.lis[:] = []
+            self.lboxfiles.delete(0, END)
+            self.lboxdirs.delete(0, END)
             try:
                 if os.path.exists(os.path.join(p, 'files.txt')):
                     fp = open(os.path.join(p, 'files.txt'), 'r')
@@ -559,7 +571,6 @@ class GuiBackup:
                     text = text.rstrip('\n')
                     text = text.lstrip('\n')
                     l1 = text.split('\n')
-
                     for item in l1:
                         if os.path.exists(item):
                             self.lboxfiles.insert(END, item)
@@ -587,8 +598,7 @@ class GuiBackup:
                             self.lboxdirs.insert(END, item)
                             self.lis.append(item)
                         else:
-                            self.write('\n')
-                            self.write(_('Directory {0} doesn\'t exists. Skip it.\n').format(item))
+                            self.write(_('Directory {0} doesn\'t exists. Skip it.').format(item))
             except:
                 self.tex.insert(END, _('No saved source directories.') + '\n')
                 self.tex.update()
@@ -680,7 +690,7 @@ class GuiBackup:
                     l = self.lboxfiles.get(0, END)
                     for item in l:
                         fp.write(item+'\n')
-                        self.write(_('I am writing the file: {0}{1}').format(item, '\n'))
+                        self.write(_('I am writing the file: {0}').format(item))
                         #self.tex.update()
                 except:
                     pass
@@ -693,7 +703,7 @@ class GuiBackup:
                     l2 = self.lboxdirs.get(0, END)
                     for item in l2:
                         fp.write(item +'\n')
-                        self.write( _('I am writing the directory: {0}{1}').format(item, '\n'))
+                        self.write( _('I am writing the directory: {0}').format(item))
                         #self.tex.update()
                 except:
                     pass
@@ -704,9 +714,10 @@ class GuiBackup:
             
         #self.create_project()
 
-        self.write( _('The End.'))
-        self.write( '\n')
-        self.write( _('Good Buy!!!'))
+        self.write( _('The End.'), True)
+        
+        self.write( _('Good Buy!!!'), True)
+        
         #self.tex.update()
         time.sleep(1)
         self.parent.destroy()
