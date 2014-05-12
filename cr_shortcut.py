@@ -11,7 +11,7 @@ python_exe = os.path.join(distutils.sysconfig.EXEC_PREFIX, "pythonw.exe")
 
 def create_app_shortcut(directory, filename, app):
     filename = os.path.normpath(os.path.join(directory, filename + ".lnk"))
-    icon = os.path.normpath(os.path.join(distutils.sysconfig.get_python_lib(), 'backup', 'docs', 'tkbackup.ico'))
+    icon = os.path.normpath(os.path.join(distutils.sysconfig.get_python_lib(), 'backup', 'docs', 'tkbak.ico'))
     app = os.path.normpath(os.path.join(sys.prefix, "Scripts", app))
     create_shortcut(python_exe, "", filename, app, "", icon)
     file_created(filename)
@@ -37,8 +37,8 @@ if sys.argv[1] == '-install' or sys.argv[1] == 'install':
     except OSError:
         pass
 
-    create_app_shortcut(desktop, "TkBackup", "tkbak")      
-    create_app_shortcut(startmenu, "TkBackup", "tkbak")
+    create_app_shortcut(desktop, "TkBak", "tkbak")      
+    create_app_shortcut(startmenu, "TkBak", "tkbak")
 
 elif sys.argv[1] == '-remove':
     pass

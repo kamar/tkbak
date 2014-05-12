@@ -56,7 +56,7 @@ print(glossa)
 ##    loc = locale.getlocale()
 ##    locale.setlocale(locale.LC_ALL, loc)
 
-t = gettext.translation("tkbackup", localedir=os.path.join(dir_name, "locale"), codeset='utf-8', fallback=True, \
+t = gettext.translation("tkbak", localedir=os.path.join(dir_name, "locale"), codeset='utf-8', fallback=True, \
                         languages=[glossa]) # t = Translation.
 _ = t.gettext
 t.install()
@@ -64,7 +64,7 @@ t.install()
 
 
 class GuiBackup:
-    def __init__(self, parent=None, title=_('tkBackup Backup Application')):
+    def __init__(self, parent=None, title=_('tkbak Backup Application')):
         self.parent = parent
         self.msg = StringVar()
         self.lis = []
@@ -75,7 +75,7 @@ class GuiBackup:
         self.project_loaded = False
         self.title = title
         self.parent.title(self.title)
-        self.parent.iconname('tkBackup')
+        self.parent.iconname('tkbak')
         self.create_icon(self.parent)
         self.maketoolbar()
         self.makewidgets()
@@ -91,7 +91,7 @@ class GuiBackup:
         try:
             p.iconbitmap('@' + dir_name + os.sep + 'docs/wilber_painter.xbm')
         except:
-            img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
+            img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbak.gif')
             p.tk.call('wm', 'iconphoto', p._w, img)
 
 
@@ -288,8 +288,8 @@ class GuiBackup:
         
         the_path = os.path.join(create_dirs(), 'projects')
         
-        ft = [('tkbackup files', '.dat'),
-              ('tkbackup files', '.db'),
+        ft = [('tkbak files', '.dat'),
+              ('tkbak files', '.db'),
               ('All Files', '*')]
         
         if not os.path.exists(the_path):
@@ -320,8 +320,8 @@ class GuiBackup:
     def read_project(self):
         import dbm
         self.lis[:] = []
-        ft = [('tkbackup files', '.dat'),
-              ('tkbackup files', '.db'),
+        ft = [('tkbak files', '.dat'),
+              ('tkbak files', '.db'),
               ('All Files', '*')]
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.join(create_dirs(), 'projects'), \
@@ -373,7 +373,7 @@ class GuiBackup:
         self.rtk = rtk
         self.create_icon(self.rtk)
 #         try:
-#             img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbackup.gif')
+#             img = PhotoImage(file=dir_name + os.sep  + 'docs/tkbak.gif')
 #             self.rtk.tk.call('wm', 'iconphoto', self.rtk._w, img)
 #         except:
 #             pass
@@ -409,7 +409,7 @@ class GuiBackup:
         style.configure("f.TLabel", font=('Arial', 14, 'bold'), foreground='green', background='black', justify=CENTER)
         lblperi = ttk.Label(frm3, anchor=CENTER, style="f.TLabel")
         lblperi.grid(sticky=ALL)
-        lblperi['text'] = 'tkBackup {0}\n{1}'.format(open(dir_name + '/docs/VERSION').read(), _('Backup and Restore Application')) 
+        lblperi['text'] = 'tkbak {0}\n{1}'.format(open(dir_name + '/docs/VERSION').read(), _('Backup and Restore Application')) 
 
         btnclose = ttk.Button(self.rtk, text=_('Close'), command=rtk.destroy)
         btnclose.grid(row=1, column=0)
@@ -611,9 +611,9 @@ class GuiBackup:
     def create_dirs(self):
 
         if sys.platform.startswith('win') or sys.platform.endswith('NT'):
-            the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbackup')
+            the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbak')
         else:
-            the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbackup')
+            the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbak')
 
         if not os.path.exists(the_path):
             os.mkdir(the_path)
@@ -780,7 +780,7 @@ def showlicense():
     root04.wait_window()
 
 class GuiRestore(GuiBackup):
-    def __init__(self, parent=None, title=_('tkbackup Restore Backup Files')):
+    def __init__(self, parent=None, title=_('tkbak Restore Backup Files')):
         self.parent = parent
         self.title = title
         self.parent.title = self.title

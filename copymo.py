@@ -11,11 +11,11 @@ for file in os.listdir('.'):
         cfile = open(file, 'rb').read()
         localedir = '../backup/locale/{0}/LC_MESSAGES'.format(os.path.splitext(file)[0])
         if os.path.exists(localedir):
-            fh = open(os.path.join(localedir, 'tkbackup.mo'), 'wb')
+            fh = open(os.path.join(localedir, 'tkbak.mo'), 'wb')
             fh.write(cfile)
         else:
             os.makedirs(localedir)
-            fh = open(os.path.join(localedir, 'tkbackup.mo'), 'wb')
+            fh = open(os.path.join(localedir, 'tkbak.mo'), 'wb')
             fh.write(cfile)
         try:
             fh.close()
