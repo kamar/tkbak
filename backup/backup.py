@@ -29,18 +29,27 @@ glossa = locale.getdefaultlocale()[0]
 
 dir_name = os.path.dirname(__file__)
 
-t = gettext.translation("tkbackup", localedir=dir_name + os.sep + "locale", codeset='utf-8', fallback=True, \
+t = gettext.translation("tkbak", localedir=dir_name + os.sep + "locale", codeset='utf-8', fallback=True, \
                         languages=[glossa])
 _ = t.gettext
 t.install()
 
-
-
+def rename_old_path(old, new):
+    
+    if os.path.exists(os.path.normpath(old)):
+        if os.path.exists(os.path.join(old, '.tkbackup.log')):
+            os.rename(os.path.join(old, '.tkbackup.log'), os.path.join(old, '.tkbak.log'))
+            os.rename(old, new)
+            
 def create_dirs():
+    
     if sys.platform.startswith('win') or sys.platform.endswith('NT'):
-        the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbackup')
+        rename_old_path(os.path.join(os.environ['APPDATA'], '.tkbackup'), os.path.join(os.environ['APPDATA'], '.tkbak'))
+        if os.path.exists(os.path.normpath(os.path.join(os.environ['APPDATA'], '.tkbak'))):
+            the_path = os.path.normpath(os.path.join(os.environ['APPDATA'], '.tkbak'))
     else:
-        the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbackup')
+        rename_old_path(os.path.join(os.path.expanduser('~'), '.tkbackup'), os.path.join(os.path.expanduser('~'), '.tkbak'))
+        the_path = os.path.normpath()
     
     if not os.path.exists(the_path):
         os.mkdir(the_path)
@@ -48,9 +57,9 @@ def create_dirs():
 
 
 logdir = create_dirs()
-logger = logging.getLogger('tkBackup Application')
+logger = logging.getLogger('tkbak Application')
 logger.setLevel(logging.INFO)
-log_file = os.path.join(logdir, '.tkbackup.log')
+log_file = os.path.join(logdir, '.tkbak.log')
 fh = logging.FileHandler(log_file, encoding='utf-8')
 fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')

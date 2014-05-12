@@ -5,6 +5,6 @@ Created on 19 Νοε 2013
 
 @author: Konstas
 '''
-from backup import tkbackup
+from backup import tkbak
 
-tkbackup.run()
+tkbak.run()
