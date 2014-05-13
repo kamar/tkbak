@@ -598,7 +598,7 @@ class GuiBackup:
                             self.lboxdirs.insert(END, item)
                             self.lis.append(item)
                         else:
-                            self.write(_('Directory {0} doesn\'t exists. Skip it.').format(item))
+                            self.write(_('Directory {0} doesn\'t exists. Skip it.').format(item), True)
             except:
                 self.tex.insert(END, _('No saved source directories.') + '\n')
                 self.tex.update()
@@ -690,7 +690,7 @@ class GuiBackup:
                     l = self.lboxfiles.get(0, END)
                     for item in l:
                         fp.write(item+'\n')
-                        self.write(_('I am writing the file: {0}').format(item))
+                        self.write(_('I am writing the file: {0}').format(item), True)
                         #self.tex.update()
                 except:
                     pass
@@ -703,7 +703,7 @@ class GuiBackup:
                     l2 = self.lboxdirs.get(0, END)
                     for item in l2:
                         fp.write(item +'\n')
-                        self.write( _('I am writing the directory: {0}').format(item))
+                        self.write( _('I am writing the directory: {0}').format(item), True)
                         #self.tex.update()
                 except:
                     pass
