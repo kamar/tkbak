@@ -1,12 +1,10 @@
-=======================================
+====================================
 tkBak Backup and Restore Application
-=======================================
+====================================
 
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
-.. |date| date::
-
-:Date: 2014-05-12
+:Date: 2014-05-13
 :Description: This is an application for backup and restore files.
 :Requirements: Requirements
 :INSTALL: Installation
