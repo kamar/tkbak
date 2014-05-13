@@ -1,10 +1,9 @@
-=======================================
+====================================
 tkBak Backup and Restore Application
-=======================================
+====================================
 
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
-.. |date| date::
 
 :Date: 2014-05-12
 :Description: This is an application for backup and restore files.
@@ -34,7 +33,7 @@ How to start
 ------------
 On a terminal just type:
 
-- cd backup
+- cd tkbak
 - python3 tkbak or chmod +x tkbak and ./tkbak for linux users.
 
 - python tkbak for windows users.
