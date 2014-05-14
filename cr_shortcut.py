@@ -13,7 +13,7 @@ def create_app_shortcut(directory, filename, app):
     filename = os.path.normpath(os.path.join(directory, filename + ".lnk"))
     icon = os.path.normpath(os.path.join(distutils.sysconfig.get_python_lib(), 'backup', 'docs', 'tkbak.ico'))
     app = os.path.normpath(os.path.join(sys.prefix, "Scripts", app))
-    create_shortcut(python_exe, "", filename, app, "", icon)
+    create_shortcut(python_exe, "tkbak Simple Backup and Restore Application.", filename, app, "", icon)
     file_created(filename)
 
 
