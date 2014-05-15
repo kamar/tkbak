@@ -49,7 +49,7 @@ def create_dirs():
             the_path = os.path.normpath(os.path.join(os.environ['APPDATA'], '.tkbak'))
     else:
         rename_old_path(os.path.join(os.path.expanduser('~'), '.tkbackup'), os.path.join(os.path.expanduser('~'), '.tkbak'))
-        the_path = os.path.normpath()
+        the_path = os.path.normpath(os.path.join(os.path.expanduser('~'), '.tkbak'))
     
     if not os.path.exists(the_path):
         os.mkdir(the_path)
