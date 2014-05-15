@@ -1,6 +1,7 @@
 2014-05-15 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Bug fixing in linux platform.
 	* checkversion.py: Added.
+	* setup.py: Improbements.
 	
 2014-05-12 Konstas Marmatakis marmako@gmail.com
 	* setup.py: Improvements.
