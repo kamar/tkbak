@@ -4,8 +4,7 @@ tkBak Backup and Restore Application
 
 :Author: Konstas Marmatakis <marmako@gmail.com>
 
-
-:Date: 2014-05-12
+:Date: 2014-05-15
 :Description: This is an application for backup and restore files.
 :Requirements: Requirements
 :INSTALL: Installation
@@ -22,8 +21,13 @@ Requirements
 Installation
 ============
 
-Just unzip the zip file to your $HOME folder.
+- Just unzip the zip file to your $HOME folder, or
 
+- There is installer for windows and linux but not fully tested.
+You can use it but with your own risk.
+
+  - Windows: Double click on "\*.exe" file, as administrator.
+  - Linux: On command line as root, type: python3 setup.py install.
 
 User Manual
 ===========
@@ -31,21 +35,25 @@ User Manual
 
 How to start
 ------------
+
+Without Installer
+~~~~~~~~~~~~~~~~
+
 On a terminal just type:
 
-- cd tkbak
+- cd backup
 - python3 tkbak or chmod +x tkbak and ./tkbak for linux users.
 
 - python tkbak for windows users.
 
-Beta
-----
-There is installer for windows and linux but not fully tested.
-You can use it but with your own risk.
-
 On graphical enviroment (windows and linux):
     click or double click on the file tkbak.
 
+With Installer
+~~~~~~~~~~~~~~
+
+*Windows:* Just click on the icon Tkbak desktop or in start menu the same icon.
+*Linux:*  Click on the icon Tkbak on the utilities menu.
 
 Manual
 ------

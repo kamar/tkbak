@@ -75,4 +75,4 @@ License: GNU/GPL v 3.0
 
            
 if __name__ == '__main__':
-    download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.zip'.format(mobj.group(1)))
+    download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(mobj.group(1)))
