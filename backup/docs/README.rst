@@ -24,10 +24,12 @@ Installation
 - Just unzip the zip file to your $HOME folder, or
 
 - There is installer for windows and linux but not fully tested.
-You can use it but with your own risk.
+  You can use it but with your own risk:
 
-  - Windows: Double click on "\*.exe" file, as administrator.
-  - Linux: On command line as root, type: python3 setup.py install.
+  - Windows: Double click on "\*.exe" setup file, as administrator.
+
+  - Linux: On command line, unzip the \*.zip or \*.tar.gz file, `cd tkbak-x.z.y`, and as root, type: `python3 setup.py install`.
+
 
 User Manual
 ===========
@@ -41,19 +43,21 @@ Without Installer
 
 On a terminal just type:
 
-- cd backup
-- python3 tkbak or chmod +x tkbak and ./tkbak for linux users.
+- `cd tkbak` 
+- `python3 tkbak` or `chmod +x tkbak` and `./tkbak` for linux users.
 
-- python tkbak for windows users.
+- `python tkbak` for windows users.
 
-On graphical enviroment (windows and linux):
+- On graphical enviroment (windows and linux):
     click or double click on the file tkbak.
 
 With Installer
 ~~~~~~~~~~~~~~
 
-*Windows:* Just click on the icon Tkbak desktop or in start menu the same icon.
-*Linux:*  Click on the icon Tkbak on the utilities menu.
+**Windows:** Just click on the icon Tkbak desktop or in start menu the same icon.
+
+**Linux:**  Click on the icon Tkbak on the utilities menu.
+
 
 Manual
 ------
