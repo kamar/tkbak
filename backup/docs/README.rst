@@ -28,7 +28,7 @@ Installation
 
   - Windows: Double click on "\*.exe" setup file, as administrator.
 
-  - Linux: On command line, unzip the \*.zip or \*.tar.gz file, `cd tkbak-x.z.y`, and as root, type: `python3 setup.py install`.
+  - Linux: On command line, unzip the \*.zip or \*.tar.gz file, ``cd tkbak-x.z.y``, and as root, type: ``python3 setup.py install``.
 
 
 User Manual
@@ -43,10 +43,10 @@ Without Installer
 
 On a terminal just type:
 
-- `cd tkbak` 
-- `python3 tkbak` or `chmod +x tkbak` and `./tkbak` for linux users.
+- ``cd tkbak`` 
+- ``python3 tkbak`` or ``chmod +x tkbak`` and ``./tkbak`` for linux users.
 
-- `python tkbak` for windows users.
+- ``python tkbak`` for windows users.
 
 - On graphical enviroment (windows and linux):
     click or double click on the file tkbak.
