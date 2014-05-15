@@ -31,7 +31,7 @@ if os.name == 'posix':
     except:
         pass
     
-    txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
+    txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBak\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBak\nGenericName[el_GR]=TkBak\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
     fh = open('tkbak.desktop', 'w')
     fh.write(txt.format(os.path.join(ins_dir, 'tkbak'), os.path.join('/usr/share/icons/hicolor/48x48/apps', 'tkbak.png')))
     fh.close()
@@ -40,7 +40,7 @@ if os.name == 'posix':
     
 setup(name='tkbak',
       version=open('backup/docs/VERSION').read().strip(),
-      description='Simple Backup Program',
+      description='Simple Backup Application',
       author='Konstas Marmatakis',
       author_email='marmako@gmail.com',
       url='https://bitbucket.org/kamar/tkbak',
@@ -49,6 +49,7 @@ setup(name='tkbak',
       package_data = {'backup': files},
       data_files = dat_files,
       license='GNU/GPLv3',
+      keywords=['Utility', 'Backup'],
 #       data_files=[('docs', ['docs/gpl-3.0.txt', 'AUTHORS', 'README.rst', 'TRANSLATORS', 'VERSION']),
 #                   ('images', ['docs/gplv3-127x51.gif', 'docs/gplv3-127x51.png',
 #                               'docs/gplv3-88x31.gif', 'docs/gplv3-88x31.png', 
@@ -63,7 +64,11 @@ setup(name='tkbak',
                    'Operating System :: Microsoft :: Windows :: Windows 7',
                    'Operating System :: POSIX',
                    'Operating System :: POSIX :: Linux',
+                   'Programming Language :: Python',
                    'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.2',
+                   'Programming Language :: Python :: 3.3',
+                   'Programming Language :: Python :: 3.4',
                    'Topic :: Desktop Environment',
                    'Topic :: System :: Archiving :: Backup'])
 
@@ -87,7 +92,7 @@ setup(name='tkbak',
 # #             print('Can\'t read the location from the script.')                            
 # #             locations='/usr/bin'
 #     
-#         txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBackup\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBackup\nGenericName[el_GR]=TkBackup\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
+#         txt ='#!/usr/bin/env xdg-open\n\n[Desktop Entry]\nVersion=1.0\nType=Application\nTerminal=false\nName[el_GR]=TkBak\nExec={0}\nIcon={1}\nComment[el_GR]=Εφαρμογή για την δημιουργία και συμπίεση εφεδρικών αντιγράφων.\nComment=Application for zip and archive files and directories.\nName=TkBak\nGenericName[el_GR]=TkBak\nCategories=Utility\nTerminal=false\nStartupNotify=false\n'
 #         # copy_file('tkbak.desktop', '/usr/share/applications/')
 #         copy_file('backup/docs/tkbak.png', '/usr/share/icons/hicolor/48x48/apps/')
 #         try:
