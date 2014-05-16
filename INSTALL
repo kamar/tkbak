@@ -25,4 +25,5 @@ WINDOWS
 Download the file tabak-x.y.z.zip and unzip:
         - unzip  tabak-x.y.z.zip
         - cd  tkbak-x.y.z
-        - py -3 setup.py install or C:\Python3.x\python.exe setup.py install        - You can also use the graphical installer (Run it as administrator.)
+        - py -3 setup.py install or C:\Python3.x\python.exe setup.py install
+        - You can also use the graphical installer (Run it as administrator.)
