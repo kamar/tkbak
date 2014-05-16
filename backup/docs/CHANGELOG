@@ -1,5 +1,7 @@
-2014-05-15 Konstas Marmatakis marmako@gmail.com
+2014-05-16 Konstas Marmatakis marmako@gmail.com
     * backup.py: Bug fixing.
+    * INSTALL: Added.
+    * tkbak.py: Checks in pypi for new version and informs the user.
 
 2014-05-15 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Bug fixing in linux platform.
