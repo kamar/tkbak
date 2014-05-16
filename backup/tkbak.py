@@ -92,8 +92,10 @@ class GuiBackup:
     def check_ver(self):
         v = checkversion.check_version()
         if v:
-            msg = _("New version is available. Version: {0}\nYou can download it at {1}").format(v, 'https://testpypi.python.org/pypi/tkbak')
-            showinfo(self.title, msg)
+            # msg = _("New version is available. Version: {0}\nYou can download it at {1}").format(v, 'https://testpypi.python.org/pypi/tkbak')
+            msg = _("New version is available. Version: {0}\nDo you want to download it now?").format(v)
+            if askyesno(self.title, msg):
+                checkversion.downloadthefile(v)
             
     def create_icon(self, p):
         #Try to set icon.
