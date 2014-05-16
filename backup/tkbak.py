@@ -35,8 +35,10 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory, asksaveasfilename
 from tkinter.messagebox import askyesno, showinfo
 
+from backup import checkversion
 from backup import backup
 from backup.backup import create_dirs
+
 
 ALL = N+S+E+W
 
@@ -84,8 +86,15 @@ class GuiBackup:
         self.center_window(self.parent)
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
         self.checkload()
+        self.parent.after_idle(self.check_ver)
+        
    
-   
+    def check_ver(self):
+        v = checkversion.check_version()
+        if v:
+            msg = _("New version is available. Version: {0}\nYou can download it at {1}").format(v, 'https://testpypi.python.org/pypi/tkbak')
+            showinfo(self.title, msg)
+            
     def create_icon(self, p):
         #Try to set icon.
         try:
@@ -559,7 +568,7 @@ class GuiBackup:
         """ Loads recent files and directories."""
         
         if askyesno(parent=self.parent, title=self.title, message=_('May I load the previous saved source files and directories?'), default='yes') == True:
-            p = self.create_dirs()
+            p = create_dirs()
             self.loadbtn['state'] = DISABLED
             self.lis[:] = []
             self.lboxfiles.delete(0, END)
@@ -608,16 +617,16 @@ class GuiBackup:
                 except:
                     pass
 
-    def create_dirs(self):
-
-        if sys.platform.startswith('win') or sys.platform.endswith('NT'):
-            the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbak')
-        else:
-            the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbak')
-
-        if not os.path.exists(the_path):
-            os.mkdir(the_path)
-        return the_path
+#     def create_dirs(self):
+# 
+#         if sys.platform.startswith('win') or sys.platform.endswith('NT'):
+#             the_path = os.path.normpath(os.environ['APPDATA']+os.sep+'.tkbak')
+#         else:
+#             the_path = os.path.normpath(os.path.expanduser('~') + os.sep + '.tkbak')
+# 
+#         if not os.path.exists(the_path):
+#             os.mkdir(the_path)
+#         return the_path
 
     def impfile(self):
         dumpfile =  self.change_filename(time.strftime('%Y%m%d') + '_' + time.strftime('%H%M%S'), False)
@@ -629,7 +638,7 @@ class GuiBackup:
 ##        self.create_recent_files(p)
 
     def create_recent_files(self, f):
-        p = self.create_dirs()
+        p = create_dirs()
         f = os.path.normpath(f)
         lfiles = []
         thefile = os.path.join(p, 'recent_backup_files.txt')
@@ -657,7 +666,7 @@ class GuiBackup:
 
 
     def checkload(self):
-        p = self.create_dirs()
+        p = create_dirs()
         fil1 = os.path.join(p, 'files.txt')
         fil2 = os.path.join(p, 'dirs.txt')
         try:
@@ -683,7 +692,7 @@ class GuiBackup:
         if len(self.lis)> 0:
             answer = askyesno(title=self.title, message=_('Do you want to save source files and directories for later use?'), default='yes')
             if answer == True:
-                p = os.path.normpath(self.create_dirs())
+                p = os.path.normpath(create_dirs())
                 fname = os.path.join(p, 'files.txt')
                 try:
                     fp = open(fname, 'w', encoding='utf-8')

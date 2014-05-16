@@ -4,14 +4,24 @@ import sys
 import urllib
 import urllib.request
 
-response = urllib.request.urlopen('https://testpypi.python.org/pypi/tkbak/')
-html = response.read()
-pat = "tkbak (\d+\.\d+\.\d+)"
-m = re.compile(pat)
-mobj = m.search(html.decode())
-print(mobj.groups())
-print(mobj.group(0))
-print(mobj.group(1))
+
+def check_version():
+    """
+    Checks for new version in 'https://testpypi.python.org/pypi/tkbak/'
+    and returns the version number if there greater than local version.
+    """
+    
+    dir_name = os.path.dirname(__file__)
+    response = urllib.request.urlopen('https://testpypi.python.org/pypi/tkbak/')
+    html = response.read()
+    pat = "tkbak (\d+\.\d+\.\d+)"
+    m = re.compile(pat)
+    mobj = m.search(html.decode())
+
+    ver = open(os.path.join(dir_name,'docs', 'VERSION')).read().strip()
+#     print('Running version: {0}\nInternet version: {1}'.format( ver, mobj.group(1)))
+    if ver < mobj.group(1):
+        return mobj.group(1)
 
 def download_me(*the_urls, block_size=8192):
     """Downloads a file from a site.
@@ -75,4 +85,6 @@ License: GNU/GPL v 3.0
 
            
 if __name__ == '__main__':
-    download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(mobj.group(1)))
+    #download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(mobj.group(1)))
+    print(check_version())
+    
