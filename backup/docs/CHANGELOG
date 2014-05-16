@@ -1,4 +1,8 @@
 2014-05-15 Konstas Marmatakis marmako@gmail.com
+    * backup.py: Bug fixing.
+
+2014-05-15 Konstas Marmatakis marmako@gmail.com
+	* tkbak.py: Bug fixing in linux platform.
 	* tkbak.py: Bug fixing in linux platform.
 	* checkversion.py: Added.
 	* setup.py: Improbements.

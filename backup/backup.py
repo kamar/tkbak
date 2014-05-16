@@ -85,7 +85,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
 
     count = 0
     target = target
-    cdirs = filesdirs
+    cdirs = set(filesdirs)
 
     if ftype == 'typezip':
 
@@ -99,7 +99,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
         if len(filesdirs) == 0:
             messagelog(_('No files or directories for compressing.'))
             zip_command.close()
-
+        
         for cdir in cdirs:
             if os.path.isdir(cdir):
                 for rt, dirs, files in os.walk(cdir):
