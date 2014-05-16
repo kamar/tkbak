@@ -12,8 +12,13 @@ def check_version():
     """
     
     dir_name = os.path.dirname(__file__)
-    response = urllib.request.urlopen('https://testpypi.python.org/pypi/tkbak/')
-    html = response.read()
+    try:
+        response = urllib.request.urlopen('https://testpypi.python.org/pypi/tkbak/')
+        html = response.read()
+    except urllib.error.URLError:
+#        print("No connection")
+        return None
+
     pat = "tkbak (\d+\.\d+\.\d+)"
     m = re.compile(pat)
     mobj = m.search(html.decode())
@@ -83,7 +88,18 @@ License: GNU/GPL v 3.0
         finally:
             fh.close()
 
-           
+def downloadthefile(ver):
+    """
+    Downloads the newest version.
+    """
+    try:
+        download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(ver))
+    except:
+        try:
+            download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(ver))
+        except:
+            print("Cannot download: {0}".format('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(ver)))
+             
 if __name__ == '__main__':
     #download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(mobj.group(1)))
     print(check_version())
