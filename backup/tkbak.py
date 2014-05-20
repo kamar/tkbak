@@ -37,7 +37,7 @@ from tkinter.messagebox import askyesno, showinfo
 
 from backup import checkversion
 from backup import backup
-from backup.backup import create_dirs
+from backup.backup import create_dirs, dir_name
 
 
 ALL = N+S+E+W
@@ -148,6 +148,9 @@ class GuiBackup:
         
         btnmnia = ttk.Button(toolbar, text=_('Credits'), command=self.credits)
         btnmnia.grid(row=0, column=6)
+        
+#         btnreadme = ttk.Button(toolbar, text=_('README'), command=self.readme)
+#         btnreadme.grid(row=0, column=7)
     
         for child in toolbar.winfo_children():
             child.grid_configure(pady=4, padx=4)
@@ -199,7 +202,9 @@ class GuiBackup:
         tex.insert(END, msg.center(70, '*'))
         tex.tag_add('protigrammi', '1.0', '1.end')
         tex.tag_config('protigrammi', background='green', foreground='black')
+#         tex.tag_add('ln', '2.0')
         tex.tag_bind('protigrammi', '<Double-1>', self.creditbind)
+        tex.config(state=DISABLED)
         self.tex = tex
 
         lblfrm1 = ttk.LabelFrame(frm, text=_('Files'))
@@ -458,7 +463,9 @@ class GuiBackup:
     def run_script(self):
         sys.stdout = self
         self.changestate()
+        self.tex['state'] = NORMAL
         dt = datetime.now()
+        
         if len(self.entcomment.get()) > 0:
             thecomment = '{0}'.format(self.entcomment.get())
         else:
@@ -471,6 +478,7 @@ class GuiBackup:
 
         self.create_recent_files(self.ent.get())
         self.changestate(True)
+        self.tex['state'] = DISABLED
 
     def changestate(self, s=False):
         if s == False:
@@ -535,11 +543,13 @@ class GuiBackup:
                 pos += 1
          
     def write(self, minima, addend=False):
+        self.tex['state'] = NORMAL
         self.tex.insert(2.0, minima)
         if addend:
             self.tex.insert(2.0,'\n')
         #self.tex.see(END)
         self.tex.update()
+        self.tex['state'] = DISABLED
         try:
             self.msg.set(minima.rstrip('\n'))
         except:
@@ -694,6 +704,7 @@ class GuiBackup:
             self.loadbtn['state'] = DISABLED
 
     def closeme(self):
+        self.tex.config(state=NORMAL)
         if len(self.lis)> 0:
             answer = askyesno(title=self.title, message=_('Do you want to save source files and directories for later use?'), default='yes')
             if answer == True:
@@ -743,6 +754,16 @@ class GuiBackup:
         gr.parent.wait_window()
         self.parent.deiconify()
         del gr
+    
+#     def readme(self):
+#         fh = open(os.path.join(dir_name,'docs', 'README.rst'), 'rb')
+#         txt = fh.read().decode()
+#         fh.close()
+#         self.tex['state'] = NORMAL
+#         self.tex.delete('1.0', END )
+#         self.tex.insert(2.0,'\n\n' + txt)
+#         self.tex['state'] = DISABLED
+     
 
 def showlicense():
 
@@ -935,7 +956,7 @@ class GuiRestore(GuiBackup):
 #         self.myzip.close()
         self.btnextract['state'] = DISABLED
 
-    
+
 def run():
     root = Tk()
     GuiBackup(root)
