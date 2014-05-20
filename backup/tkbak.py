@@ -307,8 +307,11 @@ class GuiBackup:
             os.mkdir(the_path)
         if proj_name == None or proj_name == '':
             p = asksaveasfilename(parent=self.parent, initialdir=the_path, initialfile='project', filetypes=ft)
-            p = os.path.splitext(p)[0]
-            project = dbm.open(os.path.normpath(p), 'c')
+            if len(p) > 0 or p != '':
+                p = os.path.splitext(p)[0]
+                project = dbm.open(os.path.normpath(p), 'c')
+            else:
+                return
         else:
             p = proj_name
             p = os.path.splitext(p)[0]

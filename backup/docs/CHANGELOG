@@ -1,3 +1,6 @@
+2014-05-20 Konstas Marmatakis marmako@gmail.com
+	* tkbak.py: Minor bugfixes.
+
 2014-05-16 Konstas Marmatakis marmako@gmail.com
     * backup.py: Bug fixing.
     * INSTALL: Added.
