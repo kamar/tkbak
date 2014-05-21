@@ -461,6 +461,12 @@ class GuiBackup:
                 return file
 
     def run_script(self):
+        
+        if len(self.lis) == 0:
+            msg = _("No files or directories for archiving.\nPlease load or add files and directories.")
+            self.write(msg, True)
+            return 1
+        
         sys.stdout = self
         self.changestate()
         self.tex['state'] = NORMAL
@@ -544,10 +550,11 @@ class GuiBackup:
          
     def write(self, minima, addend=False):
         self.tex['state'] = NORMAL
-        self.tex.insert(2.0, minima)
+        self.tex.focus_set()
+        self.tex.insert(END, minima)
         if addend:
-            self.tex.insert(2.0,'\n')
-        #self.tex.see(END)
+            self.tex.insert(END,'\n')
+        self.tex.see(END)
         self.tex.update()
         self.tex['state'] = DISABLED
         try:
