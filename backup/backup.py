@@ -35,6 +35,10 @@ _ = t.gettext
 t.install()
 
 def rename_old_path(old, new):
+    """
+    Renames the old tkbackup files and directories
+    to tkbak. It doesn't deletes the files.
+    """
     
     if os.path.exists(os.path.normpath(old)):
         if os.path.exists(os.path.join(old, '.tkbackup.log')):
@@ -85,7 +89,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
 
     count = 0
     target = target
-    cdirs = set(filesdirs)
+    cdirs = set(filesdirs) # Removes duplicates.
 
     if ftype == 'typezip':
 
