@@ -39,7 +39,7 @@ How to start
 ------------
 
 Without Installer
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 On a terminal just type:
 
