@@ -4,6 +4,7 @@
 import os
 
 os.chdir('po')
+print(os.listdir('.'))
 for file in os.listdir('.'):
     if file.endswith('.mo'):
         print(file)

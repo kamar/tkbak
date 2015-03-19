@@ -43,13 +43,13 @@ from backup.backup import create_dirs, dir_name
 
 ALL = N+S+E+W
 
+
 ##print(len(sys.argv), sys.argv[0])
 # print(sys.argv[0])
 # abspath = os.path.abspath(sys.argv[0])
 dir_name = os.path.dirname(__file__)
 # os.chdir(dir_name)
 # print(dir_name)
-
 
 glossa = locale.getdefaultlocale()[0]
 print(glossa)
