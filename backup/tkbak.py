@@ -27,6 +27,7 @@ import zipfile
 import tarfile
 import time
 import os
+import threading
 
 from datetime import datetime, date
 from tkinter import *
@@ -442,7 +443,6 @@ class GuiBackup:
         self.rtk.resizable(0, 0)
         self.rtk.update_idletasks()
         self.center_window(self.rtk)
-        self.rtk.wait_window()
 
     def change_filename(self, file , expand=True):
         dirpath, filename = os.path.split(file)
@@ -822,7 +822,6 @@ def showlicense():
     root04.grab_set()
     root04.focus_set()
     koumpi.focus()
-    root04.wait_window()
 
 class GuiRestore(GuiBackup):
     def __init__(self, parent=None, title=_('tkbak Restore Backup Files')):
