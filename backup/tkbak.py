@@ -3,7 +3,7 @@
 #==================================================================================
 #  Copyright:
 #
-#      Copyright (C) 2013 Konstas Marmatakis <marmako@gmail.com>
+#      Copyright (C) 2013 - 2015 Konstas Marmatakis <marmako@gmail.com>
 #
 #   License:
 #
@@ -830,6 +830,8 @@ class GuiRestore(GuiBackup):
         self.parent.title = self.title
         self.create_icon(self.parent)
         self.lis = []
+        self.columns = [_("File"), _("Modified"), _("Compressed"), _("Uncompressed"), _("CRC")]
+        self.colunsconf = {_("File"):[230, W], _("Modified"):[100, CENTER], _("Compressed"):[90, E], _("Uncompressed"):[95, E], _("CRC"):[100, CENTER]}
         self.minima = StringVar()
         self.sxolio = StringVar()
         self.makewidgets()
@@ -845,13 +847,20 @@ class GuiRestore(GuiBackup):
 
         lblcomment = ttk.Label(frm, textvariable=self.sxolio)
         lblcomment.grid(row=0, column=0, columnspan=3, sticky=W+E)
-        lstboxfromzip = Listbox(frm, width=50, height=24)
-        lstboxfromzip.grid(row=1, column=0, sticky=ALL)
-        lstboxfromzip.bind('<Double-1>', self.OnDouble)
-        self.lstboxfromzip = lstboxfromzip
-        vscbar = ttk.Scrollbar(frm, orient="vertical", command=self.lstboxfromzip.yview)
-        self.lstboxfromzip.configure(yscrollcommand=vscbar.set)
+
+        treefromzip = ttk.Treeview(frm, height=20)
+        treefromzip["columns"] = self.columns
+        treefromzip["show"] = "headings"
+        treefromzip.grid(row=1, column=0, sticky=ALL)
+        treefromzip.bind('<Double-1>', self.OnDoubleTree)
+        self.treefromzip = treefromzip
+        vscbar = ttk.Scrollbar(frm, orient="vertical", command=self.treefromzip.yview)
+        self.treefromzip.configure(yscrollcommand=vscbar.set)
         vscbar.grid(row=1, column=0, sticky=E+N+S)
+        for col in self.columns:
+            treefromzip.heading(col, text=col.upper())
+            treefromzip.column(col, width=self.colunsconf[col][0], anchor=self.colunsconf[col][1])
+        
         lstboxtorestore = Listbox(frm, width=50, height=24)
         lstboxtorestore.grid(row=1, column=1, sticky=ALL)
         self.lstboxtorestore = lstboxtorestore
@@ -862,7 +871,7 @@ class GuiRestore(GuiBackup):
         ent.grid(row=2, column=0,  sticky=W)
         self.ent = ent
 
-        btnepanaforaolon = ttk.Button(frm, text=_('All...'), state=DISABLED, command=self.movetorestore)
+        btnepanaforaolon = ttk.Button(frm, text=_('All...'), state=DISABLED, command=self.movetorestoretree)
         btnepanaforaolon.grid(row=2, column=0, sticky=E)
         self.btnepanaforaolon = btnepanaforaolon
 
@@ -894,10 +903,10 @@ class GuiRestore(GuiBackup):
         if zipfile.is_zipfile(getthefile):
             myzip = zipfile.ZipFile(getthefile, 'r')
 
-            for f in myzip.namelist():
-                self.lstboxfromzip.insert(END, f)
+            for info in myzip.infolist():
+                self.treefromzip.insert('',END, values=(info.filename, datetime(*info.date_time), info.compress_size, info.file_size, info.CRC))
 
-            self.lstboxfromzip.select_set(0)
+            #self.treefromzip.select_set(0)
     #         self.myzip = myzip
 
             if len(myzip.comment) > 0:
@@ -905,27 +914,51 @@ class GuiRestore(GuiBackup):
             #    for file in self.lis:
             #        print(file)
         elif tarfile.is_tarfile(getthefile):
-            myzip = tarfile.open(getthefile, 'r')
+            
+            myzip = tarfile.open(getthefile, encoding="utf-8")
 
-            for f in myzip.getnames():
-                self.lstboxfromzip.insert(END, f)
+            for info in myzip:
+                self.treefromzip.insert('' , END, values=(info.name, datetime.fromtimestamp(info.mtime).strftime('%Y-%m-%d %H:%M:%S'), 0, info.size, ''))
 
-            self.lstboxfromzip.select_set(0)
+            #self.treefromzip.select_set(0)
 
         myzip.close()
         self.btnfindzip['state'] = DISABLED
 
-    def movetorestore(self):
-        for item in self.lstboxfromzip.get(0, END):
+    def movetorestoretree(self):
+        for item in self.treefromzip.get_children():
+           
+            self.treefromzip.selection_set(item)
+            val = self.treefromzip.item(item, "values")
+           
+            selection = val[0]#self.treefromzip.item(i, "values")[0]
+            self.lstboxtorestore.insert(END, selection)
+            self.lis.append(item)
 
-            self.lstboxfromzip.select_set(0)
-            selection = self.lstboxfromzip.curselection()
+            self.treefromzip.delete(item)
+            self.btnextract['state'] = NORMAL
+
+    def movetorestore(self):
+        for item in self.treefromzip.get(0, END):
+
+            self.treefromzip.select_set(0)
+            selection = self.treefromzip.curselection()
 
             self.lstboxtorestore.insert(END, item)
             self.lis.append(item)
 
-            self.lstboxfromzip.delete(selection[0])
+            self.treefromzip.delete(selection[0])
             self.btnextract['state'] = NORMAL
+    
+    def OnDoubleTree(self, event):
+        widget = event.widget
+        selection=widget.selection()
+        
+        val = widget.item(selection, "values")[0]
+        self.lstboxtorestore.insert(END, val)
+        self.lis.append(val)
+        widget.delete(selection[0])
+        self.btnextract['state'] = NORMAL
 
     def OnDouble(self, event):
         widget = event.widget
@@ -943,7 +976,9 @@ class GuiRestore(GuiBackup):
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.expanduser('~'), \
                               title=self.title, filetypes=ft)
+
         p = os.path.normpath(p)
+
         self.ent.delete(0, END)
         self.ent.insert(0, p)
         self.loadme(self.ent.get())
