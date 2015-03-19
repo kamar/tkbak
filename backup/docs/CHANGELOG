@@ -1,6 +1,8 @@
+2015-03-19 Konstas Marmatakis marmako@gmail.com
+	* tkbak.py: License and Credits windows don't block the main application.
+
 2014-05-21 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Minor bugfixes and improvements.
-
 
 2014-05-20 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Minor bugfixes.
