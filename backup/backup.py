@@ -7,7 +7,7 @@ Command line script for backup and ziping files.
 
 @author:     K. Marmatakis
 
-@copyright:  2013 All rights reserved.
+@copyright:  2015 All rights reserved.
 
 @license:   GNU/GPL v3
 
@@ -138,7 +138,7 @@ def Backup(filesdirs=['dir'], target='zip_pyx.zip', ftype='typezip', mode='w', a
 
     elif ftype == 'typetar':
         mode = mode + ':gz'
-        zip_command = tarfile.open(target, mode)
+        zip_command = tarfile.open(target, mode, encoding="utf-8")
 
         if len(addcom) > 0:
             messagelog(_('There is not support for comments.'))
