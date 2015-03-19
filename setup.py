@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 18-11-2013
-Updated on 04-05-2014
+Updated on 19-03-2015
 @ author: Konstas Marmatakis
 '''
 
@@ -64,7 +64,6 @@ setup(name='tkbak',
                    'Operating System :: Microsoft :: Windows :: Windows 7',
                    'Operating System :: POSIX',
                    'Operating System :: POSIX :: Linux',
-                   'Programming Language :: Python',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
