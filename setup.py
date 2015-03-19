@@ -9,7 +9,7 @@ Updated on 04-05-2014
 import os
 import sys
 from distutils.core import setup
-from distutils.file_util import copy_file
+# from distutils.file_util import copy_file
 
 if (sys.version_info.major, sys.version_info.minor) < (3, 2):
     print("You must have version 3.2 and above.")
@@ -56,7 +56,7 @@ setup(name='tkbak',
 #                               'docs/tkbak.gif', 'docs/tkbak.png'])],
       long_description=open('backup/docs/README.rst', encoding='utf-8').read().replace('\ufeff', ''),
       platforms=['Linux', 'Windows'],
-      classifiers=['Development Status :: 4 - Beta',
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: X11 Applications',
                    'Intended Audience :: Other Audience',
                    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
