@@ -971,7 +971,7 @@ class GuiRestore(GuiBackup):
 
     def openthezip(self):
         ft = [('ZIP', '.zip'),
-              ('Tar.gz', 'tar.gz'),
+              ('Tar.gz', '.tar.gz'),
               ('All Files', '*')]
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.expanduser('~'), \
