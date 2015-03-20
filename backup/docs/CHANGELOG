@@ -1,5 +1,7 @@
 2015-03-20 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Small fixes.
+	* tkbak.py: Change mouse cursor when loading zip or tar.gz file.
+	* tkbak.py: Added message when starts the load for zip file and when is loaded.
 
 2015-03-19 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: License and Credits windows don't block the main application.
