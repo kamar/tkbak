@@ -900,7 +900,7 @@ class GuiRestore(GuiBackup):
 
     def loadme(self, getthefile):
         #file = r'C:\Users\Konstas\zip.zip'
-        #self.treefromzip.config(cursor="watch")
+        self.parent.config(cursor="watch")
         self.tex.insert('1.0', _("Φορτώνω το αρχείο. Παρακαλώ περιμένετε..."))
         self.parent.update()
         if zipfile.is_zipfile(getthefile):
@@ -926,7 +926,7 @@ class GuiRestore(GuiBackup):
             #self.treefromzip.select_set(0)
 
         myzip.close()
-        #self.treefromzip.config(cursor="")
+        self.parent.config(cursor="")
         self.tex.insert(END, '\n')
         self.tex.insert(END, _("Το αρχείο φορτώθηκε."))
         self.btnfindzip['state'] = DISABLED
