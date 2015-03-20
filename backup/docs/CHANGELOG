@@ -1,3 +1,6 @@
+2015-03-20 Konstas Marmatakis marmako@gmail.com
+	* tkbak.py: Small fixes.
+
 2015-03-19 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: License and Credits windows don't block the main application.
 	* tkbak.py: Added iformation from files in zip and tar file (Modification, Size Compressed, Side Uncompressed, CRC).
