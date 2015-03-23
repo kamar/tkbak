@@ -1,3 +1,7 @@
+2015-03-23 Konstas Marmatakis marmako@gmail.com
+    * tkbak.py: Bug fixes.
+    * tkbak.py: Added Progress Bar for loading tar files.
+
 2015-03-20 Konstas Marmatakis marmako@gmail.com
 	* tkbak.py: Small fixes.
 	* tkbak.py: Change mouse cursor when loading zip or tar.gz file.

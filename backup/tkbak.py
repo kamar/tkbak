@@ -34,7 +34,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename, askopenfilenames,  askdirectory, asksaveasfilename
-from tkinter.messagebox import askyesno, showinfo
+from tkinter.messagebox import askyesno, showinfo, showerror
 
 from backup import checkversion
 from backup import backup
@@ -844,7 +844,7 @@ class GuiRestore(GuiBackup):
         frm = ttk.Frame(self.parent)
         frm.grid(row=0, column=0, sticky=ALL)
         #frm.config(bg='black')
-
+        self.frm = frm
         lblcomment = ttk.Label(frm, textvariable=self.sxolio)
         lblcomment.grid(row=0, column=0, columnspan=3, sticky=W+E)
 
@@ -883,8 +883,10 @@ class GuiRestore(GuiBackup):
         self.tex = tex
 
         btnfindzip = ttk.Button(frm, text=_('Load zipped file'), command= self.openthezip)
-        btnfindzip.grid(row=3, column=0)
+        btnfindzip.grid(row=3, column=0, sticky=W)
         self.btnfindzip = btnfindzip
+
+        
 
         btnextract = ttk.Button(frm, state=DISABLED, text= _('Deflating'), command=self.extractfromzip)
         btnextract.grid(row=3, column=1)
@@ -898,35 +900,50 @@ class GuiRestore(GuiBackup):
             child.grid_configure(pady=5, padx=5)
 
 
+    def create_pbar(self, s=100):
+        pb = ttk.Progressbar(self.frm, orient="horizontal", length=300, mode="indeterminate", maximum=s)
+        pb.grid(row=3, column=0, sticky=E)
+        pb.grid_remove()
+        self.pb = pb
+
+        
+
     def loadme(self, getthefile):
-        #file = r'C:\Users\Konstas\zip.zip'
-        self.parent.config(cursor="watch")
-        self.tex.tag_configure('important', font=('Helvetica', 10, 'bold'), background='yellow' ,foreground='red')
-        self.tex.insert('1.0', _("I am loading the file. Please wait..."), ('important',))
-        self.parent.update()
+        
+        if getthefile:
+            self.parent.config(cursor="watch")
+            self.tex.tag_configure('important', font=('Helvetica', 10, 'bold'), background='yellow' ,foreground='red')
+            self.tex.insert('1.0', _("I am loading the file. Please wait..."), ('important',))
+            self.parent.update()
+            
         if zipfile.is_zipfile(getthefile):
             myzip = zipfile.ZipFile(getthefile, 'r')
 
             for info in myzip.infolist():
                 self.treefromzip.insert('',END, values=(info.filename, datetime(*info.date_time), info.compress_size, info.file_size, info.CRC))
-
-            #self.treefromzip.select_set(0)
-    #         self.myzip = myzip
+            it = self.treefromzip.get_children()
+            self.treefromzip.selection_set(it[0])
 
             if len(myzip.comment) > 0:
                 self.sxolio.set(myzip.comment.decode())
             #    for file in self.lis:
             #        print(file)
         elif tarfile.is_tarfile(getthefile):
-            
             myzip = tarfile.open(getthefile, encoding="utf-8")
-
+            #synolo_arxeion = len(myzip.getnames())
+            self.create_pbar()
+            self.pb.grid()
+            self.pb.start()
             for info in myzip:
                 self.treefromzip.insert('' , END, values=(info.name, datetime.fromtimestamp(info.mtime).strftime('%Y-%m-%d %H:%M:%S'), 0, info.size, ''))
-
-            #self.treefromzip.select_set(0)
+##                self.pb.step(1)
+                self.parent.update()
+            it = self.treefromzip.get_children()
+            self.treefromzip.selection_set(it[0])
+            self.pb.stop()
 
         myzip.close()
+        
         self.parent.config(cursor="")
         self.tex.insert(END, '\n')
         self.tex.insert(END, _("The file loaded."), ('important',))
@@ -978,18 +995,20 @@ class GuiRestore(GuiBackup):
 
     def openthezip(self):
         ft = [('ZIP', '.zip'),
-              ('Tar.gz', '.tar.gz'),
-              ('All Files', '*')]
+              ('Tar.gz', '.tar.gz')]
 
         p = askopenfilename(parent=self.parent, initialdir=os.path.expanduser('~'), \
                               title=self.title, filetypes=ft)
 
         p = os.path.normpath(p)
-
-        self.ent.delete(0, END)
-        self.ent.insert(0, p)
-        self.loadme(self.ent.get())
-        self.btnepanaforaolon['state'] = NORMAL
+        if os.path.isfile(p):
+            self.ent.delete(0, END)
+            self.ent.insert(0, p)
+            self.loadme(self.ent.get())
+            self.btnepanaforaolon['state'] = NORMAL
+        else:
+            showerror(self.title, _("You must select a tar or zip file."))
+            return
 
     def extractfromzip(self):
         sys.stdout = self
