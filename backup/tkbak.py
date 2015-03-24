@@ -835,6 +835,8 @@ class GuiRestore(GuiBackup):
         self.minima = StringVar()
         self.sxolio = StringVar()
         self.makewidgets()
+        self.parent.rowconfigure(0, weight=1)
+        self.parent.columnconfigure(0, weight=1)
         self.parent.update_idletasks()
         self.center_window(self.parent)
         self.parent.protocol("WM_DELETE_WINDOW", lambda: '')
@@ -843,20 +845,25 @@ class GuiRestore(GuiBackup):
     def makewidgets(self):
         frm = ttk.Frame(self.parent)
         frm.grid(row=0, column=0, sticky=ALL)
-        #frm.config(bg='black')
+##        frm.config(bg='black')
+        frm.rowconfigure(1, weight=1)
+        frm.columnconfigure(0, weight=1)
         self.frm = frm
         lblcomment = ttk.Label(frm, textvariable=self.sxolio)
         lblcomment.grid(row=0, column=0, columnspan=3, sticky=W+E)
 
-        treefromzip = ttk.Treeview(frm, height=20)
+        treefromzip = ttk.Treeview(frm)
         treefromzip["columns"] = self.columns
         treefromzip["show"] = "headings"
         treefromzip.grid(row=1, column=0, sticky=ALL)
+        treefromzip.rowconfigure(1, weight=1)
+        treefromzip.columnconfigure(0, weight=1)
         treefromzip.bind('<Double-1>', self.OnDoubleTree)
         self.treefromzip = treefromzip
         vscbar = ttk.Scrollbar(frm, orient="vertical", command=self.treefromzip.yview)
         self.treefromzip.configure(yscrollcommand=vscbar.set)
         vscbar.grid(row=1, column=0, sticky=E+N+S)
+        
         for col in self.columns:
             treefromzip.heading(col, text=col.upper())
             treefromzip.column(col, width=self.colunsconf[col][0], anchor=self.colunsconf[col][1])
@@ -901,7 +908,9 @@ class GuiRestore(GuiBackup):
 
 
     def create_pbar(self, s=100):
-        pb = ttk.Progressbar(self.frm, orient="horizontal", length=300, mode="indeterminate", maximum=s)
+        st = ttk.Style()
+        st.configure("f.Horizontal.TProgressbar", background='maroon', foreground='maroon', relief=FLAT)
+        pb = ttk.Progressbar(self.frm, style="f.Horizontal.TProgressbar", orient="horizontal", length=200, mode="indeterminate", maximum=s)
         pb.grid(row=3, column=0, sticky=E)
         pb.grid_remove()
         self.pb = pb
@@ -914,6 +923,9 @@ class GuiRestore(GuiBackup):
             self.parent.config(cursor="watch")
             self.tex.tag_configure('important', font=('Helvetica', 10, 'bold'), background='yellow' ,foreground='red')
             self.tex.insert('1.0', _("I am loading the file. Please wait..."), ('important',))
+            self.create_pbar()
+            self.pb.grid()
+            self.pb.start()
             self.parent.update()
             
         if zipfile.is_zipfile(getthefile):
@@ -921,6 +933,7 @@ class GuiRestore(GuiBackup):
 
             for info in myzip.infolist():
                 self.treefromzip.insert('',END, values=(info.filename, datetime(*info.date_time), info.compress_size, info.file_size, info.CRC))
+                self.parent.update()
             it = self.treefromzip.get_children()
             self.treefromzip.selection_set(it[0])
 
@@ -929,21 +942,22 @@ class GuiRestore(GuiBackup):
             #    for file in self.lis:
             #        print(file)
         elif tarfile.is_tarfile(getthefile):
+##            self.treefromzip.config(columns=self.columns[0:3])
             myzip = tarfile.open(getthefile, encoding="utf-8")
             #synolo_arxeion = len(myzip.getnames())
-            self.create_pbar()
-            self.pb.grid()
-            self.pb.start()
+##            self.create_pbar()
+##            self.pb.grid()
+##            self.pb.start()
             for info in myzip:
                 self.treefromzip.insert('' , END, values=(info.name, datetime.fromtimestamp(info.mtime).strftime('%Y-%m-%d %H:%M:%S'), 0, info.size, ''))
 ##                self.pb.step(1)
                 self.parent.update()
             it = self.treefromzip.get_children()
             self.treefromzip.selection_set(it[0])
-            self.pb.stop()
+            
 
         myzip.close()
-        
+        self.pb.stop()
         self.parent.config(cursor="")
         self.tex.insert(END, '\n')
         self.tex.insert(END, _("The file loaded."), ('important',))
