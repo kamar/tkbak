@@ -3,7 +3,7 @@
 #==================================================================================
 #  Copyright:
 #
-#      Copyright (C) 2013 Konstas Marmatakis <marmako@gmail.com>
+#      Copyright (C) 2013 - 2015 Konstas Marmatakis <marmako@gmail.com>
 #
 #   License:
 #
@@ -47,7 +47,7 @@ def check_version():
     
     dir_name = os.path.dirname(__file__)
     try:
-        response = urllib.request.urlopen('https://testpypi.python.org/pypi/tkbak/')
+        response = urllib.request.urlopen('https://pypi.python.org/pypi/tkbak/')
         html = response.read()
     except urllib.error.URLError:
 #        print("No connection")
@@ -133,7 +133,7 @@ def downloadthefile(ver):
     Downloads the newest version.
     """
     try:
-        filen = 'https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(ver)
+        filen = 'https://pypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(ver)
         download_me(filen)
     except:
         print(_("Cannot download: {0}").format(filen))
@@ -145,6 +145,6 @@ def downloadthefile(ver):
             print(_("Cannot download: {0}").format(filen))
              
 if __name__ == '__main__':
-    download_me('https://testpypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(check_version()))
+    download_me('https://pypi.python.org/packages/source/t/tkbak/tkbak-{0}.tar.gz'.format(check_version()))
     #print(check_version())
     
