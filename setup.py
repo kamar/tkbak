@@ -2,17 +2,25 @@
 # -*- coding: utf-8 -*-
 '''
 Created on 18-11-2013
-Updated on 19-03-2015
+Updated on 25-03-2015
 @ author: Konstas Marmatakis
 '''
 
 import os
 import sys
+import locale
+import gettext
 from distutils.core import setup
 # from distutils.file_util import copy_file
 
+glossa = locale.getdefaultlocale()[0]
+t = gettext.translation("tkbak", localedir=os.path.join("backup", "locale"), codeset='utf-8', fallback=True, \
+                        languages=[glossa]) # t = Translation.
+_ = t.gettext
+t.install()
+
 if (sys.version_info.major, sys.version_info.minor) < (3, 2):
-    print("You must have version 3.2 and above.")
+    print(_("You must have version 3.2 and above. Recommended Version: 3.4."))
     sys.exit(1)
 
 
