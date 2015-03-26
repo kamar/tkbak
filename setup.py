@@ -10,7 +10,8 @@ import os
 import sys
 import locale
 import gettext
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import setup
 # from distutils.file_util import copy_file
 
 glossa = locale.getdefaultlocale()[0]
@@ -25,7 +26,7 @@ if (sys.version_info.major, sys.version_info.minor) < (3, 2):
 
 
 files = ['docs/*', 'locale/*/LC_MESSAGES/*']
-dat_files = []
+#dat_files = []
 
 
 if os.name == 'posix':
@@ -58,10 +59,6 @@ setup(name='tkbak',
       data_files = dat_files,
       license='GNU/GPLv3',
       keywords=['Utility', 'Backup'],
-#       data_files=[('docs', ['docs/gpl-3.0.txt', 'AUTHORS', 'README.rst', 'TRANSLATORS', 'VERSION']),
-#                   ('images', ['docs/gplv3-127x51.gif', 'docs/gplv3-127x51.png',
-#                               'docs/gplv3-88x31.gif', 'docs/gplv3-88x31.png', 
-#                               'docs/tkbak.gif', 'docs/tkbak.png'])],
       long_description=open('backup/docs/README.rst', encoding='utf-8').read().replace('\ufeff', ''),
       platforms=['Linux', 'Windows'],
       classifiers=['Development Status :: 5 - Production/Stable',
